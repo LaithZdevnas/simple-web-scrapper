@@ -1,0 +1,103 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+*.egg
+*.manifest
+*.spec
+
+# Installer / pip logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage / caches
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+*.cover
+*.py,cover
+.hypothesis/
+
+# Jupyter / IPython
+.ipynb_checkpoints
+
+# Environments
+.env
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# macOS / OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*~
+
+# IDE / Editor settings
+.idea/
+*.iml
+*.iws
+*.ipr
+*.pyproj
+*.sln
+
+# VSCode settings (if you also use it)
+.vscode/
+
+# Python version / tools
+.python-version
+__pypackages__/
+
+# Logs
+*.log
+
+# Secrets / environment / runtime artifacts
+*.env         # if your environment file uses .env naming
+*.env.*       # optionally for multiple .env variants
+
+# Others
+*.sqlite3
+db.sqlite3
+
+# JetBrains / PyCharm specifics (some more fine-grained)
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries/
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/gradle.xml
+.idea/**/libraries/
+.idea_modules/
+out/
+
+# Optional: logs, tmp, caches
+logs/
+temp/
+tmp/
+/vcs.xml
+/modules.xml
+/misc.xml
+/workspace.xml
+/inspectionProfiles/profiles_settings.xml
