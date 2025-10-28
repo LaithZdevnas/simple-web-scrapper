@@ -1,0 +1,307 @@
+{
+  "morgansrealty": {
+    "allowed_domains": ["morgansrealty.com"],
+    "start_url": "https://www.morgansrealty.com/properties-for-sales",
+
+    "listing": {
+      "wait_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div",
+
+      "cards":       { "css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div" },
+      "title":       { "css": "div > div > figcaption > a > h3::text" },
+      "detail_link": { "css": "div > div > figcaption > a::attr(href)" },
+
+      "next_button": { "css": "" },
+      "next_anchor": { "css": "li[class='next'] a::attr(href)" },
+
+      "first_card_link_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "body > div:nth-child(11) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > a",
+
+      "fields": {
+        "price":        { "css": "div[class='price-amenitity'] h3::text" },
+        "currency":     { "css": "div[class='price-amenitity'] h3::text" },
+        "description":  { "css": ".show_more_content::text" },
+        "rent_or_buy":  { "css": "a[href='https://www.morgansrealty.com/search?prop_for=sales']::text" },
+        "property_type":{ "css": ".category-label::text" },
+        "coordinates":  { "css": "div.property-location iframe::attr(src)" },
+        "images":       { "css": "body > div:nth-child(11) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div > a::attr(href)" },
+        "size":         { "css": "body > div:nth-child(11) > section:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(1) > p:nth-child(2)::text" },
+
+        "sub_location": { "xpath": "normalize-space(//p[img]/text())" },
+        "amenities":    { "xpath": "//div[@class='ameneties-items']/div/p/text()",
+                          "get_all" : true
+        },
+        "bathrooms":    { "xpath": "normalize-space(//div[contains(@class,'amenity-box')][.//img[contains(@src,'/bathtub.svg')]]/p)"},
+        "bedrooms":     { "xpath": "normalize-space(//div[contains(@class,'amenity-box')][.//img[contains(@src,'/bed.svg')]]/p)" },
+
+        "location":     { "xpath": "" },
+        "city":         { "xpath": "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
+  },
+  "morgansrealtyrent": {
+    "allowed_domains": ["morgansrealty.com"],
+    "start_url": "https://www.morgansrealty.com/search?prop_for=rent",
+
+    "listing": {
+      "wait_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div",
+
+      "cards":       { "css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div" },
+      "title":       { "css": "div > div > figcaption > a > h3::text" },
+      "detail_link": { "css": "div > div > figcaption > a::attr(href)" },
+
+      "next_button": { "css": "" },
+      "next_anchor": { "css": "li[class='next'] a::attr(href)" },
+
+      "first_card_link_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "body > div:nth-child(11) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > a",
+
+      "fields": {
+        "price":        { "css": "div[class='price-amenitity'] h3::text" },
+        "currency":     { "css": "div[class='price-amenitity'] h3::text" },
+        "description":  { "css": ".show_more_content::text" },
+        "rent_or_buy":  { "css": "a[href='https://www.morgansrealty.com/search?prop_for=rent']::text" },
+        "property_type":{ "css": ".category-label::text" },
+        "coordinates":  { "css": "div.property-location iframe::attr(src)" },
+        "images":       { "css": "body > div:nth-child(11) > section:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div > a::attr(href)" },
+        "size":         { "css": "body > div:nth-child(11) > section:nth-child(3) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(3) > div:nth-child(2) > div:nth-child(1) > p:nth-child(2)::text" },
+
+        "sub_location": { "xpath": "normalize-space(//p[img]/text())" },
+        "amenities":    { "xpath": "//div[@class='ameneties-items']/div/p/text()",
+                          "get_all" : true
+        },
+        "bathrooms":    { "xpath": "normalize-space(//div[contains(@class,'amenity-box')][.//img[contains(@src,'/bathtub.svg')]]/p)"},
+        "bedrooms":     { "xpath": "normalize-space(//div[contains(@class,'amenity-box')][.//img[contains(@src,'/bed.svg')]]/p)" },
+
+        "location":     { "xpath": "" },
+        "city":         { "xpath": "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
+  },
+  "skyviewdubai": {
+    "allowed_domains": ["skyviewdubai.com"],
+    "start_url": "https://skyviewdubai.com/properties/buy-properties-in-dubai-uae",
+
+    "listing": {
+      "wait_css": ".real-estate.mt-5.grid-container.row.portfolio",
+
+      "cards":       { "css": "body > div:nth-child(2) > section:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div" },
+      "title":       { "css": "div.real-estate-item-desc > h3 > a::text" },
+      "detail_link": { "css": "div.real-estate-item-image > a::attr(href)" },
+
+      "next_button": { "css": "" },
+      "next_anchor": { "css": "li:nth-child(8) a:nth-child(1)::attr(href)" },
+
+      "first_card_link_css": "body > div:nth-child(2) > section:nth-child(4) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "body",
+
+      "fields": {
+        "price":        { "xpath": "//h3[normalize-space()='Price']/following-sibling::h3/text()" },
+        "currency":     { "xpath": "//h3[normalize-space()='Price']/following-sibling::h3/text()" },
+        "description":  { "css": "div[class='postcontent col-lg-8'] pre::text" },
+        "rent_or_buy":  { "css": "h5[class='my-1']::text" },
+        "property_type":{ "css": "div[class='d-flex'] div:nth-child(2) span:nth-child(1)::text" },
+        "bathrooms":    { "xpath": "//div[normalize-space()='Baths']/preceding-sibling::h3/text()" },
+        "bedrooms":     { "xpath": "//div[normalize-space()='Beds']/preceding-sibling::h3/text()" },
+        "size":         { "xpath": "//div[normalize-space()='Sq.Ft.']/preceding-sibling::h3/text()" },
+        "images":       { "css": "div[class='row m-auto'] > div.col-md-4 > div> div>div>div > a::attr(href)" },
+
+        "coordinates":  { "css": "" },
+        "sub_location": { "xpath": "" },
+        "amenities":    { "xpath": ""},
+        "location":     { "xpath": "" },
+        "city":         { "xpath": "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
+  },
+  "kayeandco": {
+    "allowed_domains": ["kayeandco.ae"],
+    "start_url": "https://kayeandco.ae/buy/",
+
+    "listing": {
+      "wait_css": ".elementor-loop-container.elementor-grid > div",
+
+      "cards":       { "css": ".elementor-loop-container.elementor-grid > div" },
+      "title":       { "css": "h2.elementor-heading-title::text" },
+      "detail_link": { "css": "a::attr(href)" },
+
+      "next_button": { "css": "" },
+      "next_anchor": { "css": "" },
+
+      "first_card_link_css": ".elementor-loop-container.elementor-grid > div:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "body",
+
+      "fields": {
+        "price":        { "xpath": "//*[@id=\"main\"]/div/div[2]/div/div[1]/div/div/div/div[2]/h3/span/text()" },
+        "bathrooms":    { "xpath": "//*[@id=\"main\"]/div/div[2]/div/div[2]/div/div[2]/div/div/div[2]/h3/span/text()" },
+        "bedrooms":     { "xpath": "//*[@id=\"main\"]/div/div[2]/div/div[2]/div/div[1]/div/div/div[2]/h3/span/text()" },
+        "description":  { "xpath": "//*[@id=\"main\"]/div/div[3]/div/div[5]/div/text()" },
+        "location":     { "xpath": "//*[@id=\"main\"]/div/div[3]/div/div[2]/div/div/div[2]/h3/span/text()" },
+        "size":         { "xpath": "//*[@id=\"main\"]/div/div[2]/div/div[2]/div/div[3]/div/div/div[2]/h3/span/text()" },
+        "amenities":    { "xpath": "//*[@id=\"main\"]/div/div[3]/div/div[11]/div/text()" , "get_all" : true },
+        "rent_or_buy":  { "default_value": "Buy" },
+        "images":       { "xpath": "//*[@id=\"main\"]/div/div[1]/div/div/div/div/img/@src" },
+        "property_type":{ "xpath": "//*[@id=\"main\"]/div/div[3]/div/div[8]/div[1]/div/div/ul/li[1]/span[2]/text()" },
+
+
+        "currency":     { "xpath": "" },
+        "coordinates":  { "css": "" },
+        "sub_location": { "xpath": "" },
+        "city":         { "xpath": "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
+  },
+  "dubaifirsthome": {
+    "allowed_domains": ["dubaifirsthome.com"],
+    "start_url": "https://dubaifirsthome.com/status/sale/",
+
+    "listing": {
+      "wait_css": "div.listing-tools-wrap ~ div div.item-listing-wrap",
+
+      "cards":       { "css": "div.listing-tools-wrap ~ div div.item-listing-wrap" },
+      "title":       { "css": "div > div > div.item-body > h2 > a::text" },
+      "detail_link": { "css": "div > div > div.item-body > h2 > a::attr(href)" },
+
+      "next_button": { "css": "" },
+      "next_anchor": { "css": "" },
+
+      "first_card_link_css": "div.listing-tools-wrap ~ div div.item-listing-wrap:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "main[id='main-wrap'] li:nth-child(6) div:nth-child(1)",
+
+      "fields": {
+        "price":        { "xpath": "//div[@role='main']//span[1]/text()" },
+        "currency":     { "xpath": "//div[@role='main']//span[1]/text()" },
+        "bedrooms":     { "xpath": "//ul[2]//li[1]//strong[1]/text()" },
+        "bathrooms":    { "xpath": "//li[5]//div[1]//span[1]/text()" },
+        "size":         { "xpath": "//ul[4]//li[1]//strong[1]/text()" },
+        "property_type":{ "css":   "div[role='list'] li:nth-child(2) strong:nth-child(1)::text" },
+        "rent_or_buy":  { "xpath": "//div[@role='main']//div//a/text()" },
+        "amenities":    { "css": "div[id='property-features-wrap'] div div ul[role='list'] li",
+                          "get_all" : true
+        },
+        "city":         { "xpath": "//span[@aria-labelledby='city-label']/text()" },
+        "location":     { "xpath": "//div[@role='main']//div//address[@role='contentinfo']/text()" },
+        "sub_location": { "xpath": "//span[@aria-labelledby='area-label']/text()" },
+        "description":  { "css": "div[id='property-description-wrap'] div div div div p" , "get_all": true },
+        "images":       { "css": "#main-wrap section div.property-banner-item::attr(data-src)" },
+
+
+        "coordinates":  { "css": "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
+  },
+  "engelvoelkers": {
+    "allowed_domains": ["engelvoelkers.com"],
+    "start_url": "https://www.engelvoelkers.com/ae/en/properties/res/sale/real-estate",
+
+    "listing": {
+      "wait_css": "body > div:nth-child(4) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)",
+
+      "cards":       { "xpath": "//body/div[@id='__next']/div/div/div/div/div[@data-testid='search-components_results-list']/div/div[2]/div[1]/article" },
+      "title":       { "css": "div:nth-of-type(2) > h2::text" },
+      "detail_link": { "css": "div:nth-of-type(2) > div:nth-of-type(2) > a::attr(href)" },
+
+      "next_button": { "css": "li:nth-child(8) button:nth-child(1):not([disabled])" },
+      "next_anchor": { "css": "" },
+
+      "first_card_link_css": "body > div:nth-child(4) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)"
+    },
+
+    "detail": {
+      "wait_css": "div[data-testid='expose-property-description-text'] div",
+
+      "fields": {
+        "price":        { "css": "span[data-testid='expose-price-value']::text" },
+        "currency":     { "css": "span[data-testid='expose-price-value']::text" },
+        "description":  { "css": "div[data-testid='expose-property-description-text'] div::text" },
+        "property_type":{ "css": "body div[id='__next'] section section ul:nth-child(1) li:nth-child(1) p:nth-child(2)::text" },
+        "bedrooms":     { "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bedrooms')]/text()" },
+        "bathrooms":    { "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bathrooms')]/text()" },
+        "city":         { "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[2]/button/text()" },
+        "location":     { "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[3]/button/text()" },
+        "images":       { "xpath": "//*[@id=\"__next\"]/div/div[5]/div[1]/button/img/@src" },
+        "rent_or_buy":  { "default_value": "Buy" },
+
+
+        "size":         { "xpath": "" },
+        "amenities":    { "xpath": "" },
+        "sub_location": { "xpath": "" },
+        "coordinates":  { "css":   "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
+  },
+  "uniqueproperties": {
+    "allowed_domains": ["uniqueproperties.ae"],
+    "start_url": "https://uniqueproperties.ae/en/properties",
+
+    "listing": {
+      "wait_css": "//body/main/section/div/div/div/div/div/div[@id='pills-tabContent']/div[@id='listView']/div[1]/div[@class='col-12 col-lg-6 col-md-12 p-2']",
+
+      "cards":       { "xpath": "//body/main/section/div/div/div/div/div/div[@id='pills-tabContent']/div[@id='listView']/div[1]/div[@class='col-12 col-lg-6 col-md-12 p-2']" },
+      "title":       { "xpath": "//div/div[@class='col-md-7']//small[@class='text-black']/text()" },
+      "detail_link": { "css": "div.swiper.swiperPropList a::attr(href)" },
+
+      "next_button": { "css": "li button:not([disabled])" },
+      "next_anchor": { "css": "" },
+
+      "first_card_link_css": "//body/main/section/div/div/div/div/div/div[@id='pills-tabContent']/div[@id='listView']/div[1]/div[@class='col-12 col-lg-6 col-md-12 p-2'][1]"
+    },
+
+    "detail": {
+      "wait_css": "div[data-testid='expose-property-description-text'] div",
+
+      "fields": {
+        "price":        { "css": "li:nth-child(4) small:nth-child(1)::text" },
+        "currency":     { "css": "li:nth-child(4) small:nth-child(1)::text" },
+        "description":  { "xpath": "//body/main/section/div/div/div/div[2]/div[1]/span[1]/text()" },
+
+        "property_type":{ "css": "body div[id='__next'] section section ul:nth-child(1) li:nth-child(1) p:nth-child(2)::text" },
+        "bedrooms":     { "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bedrooms')]/text()" },
+        "bathrooms":    { "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bathrooms')]/text()" },
+        "city":         { "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[2]/button/text()" },
+        "location":     { "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[3]/button/text()" },
+        "images":       { "xpath": "//*[@id=\"__next\"]/div/div[5]/div[1]/button/img/@src" },
+        "rent_or_buy":  { "default_value": "Buy" },
+        "size":         { "xpath": "" },
+        "amenities":    { "xpath": "" },
+        "sub_location": { "xpath": "" },
+        "coordinates":  { "css":   "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
+  }
+}
