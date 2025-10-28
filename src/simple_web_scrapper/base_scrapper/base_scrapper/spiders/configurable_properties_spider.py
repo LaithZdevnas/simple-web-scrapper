@@ -11,10 +11,11 @@ from w3lib.html import remove_tags
 from ..items import *
 
 
-class ConfigurableCarSpider(scrapy.Spider):
-    name = "configurable_car_spider"
+class ConfigurablePropertiesSpider(scrapy.Spider):
+    name = "configurable_properties_spider"
 
     def __init__(self, site=None, config=None, *args, **kwargs):
+
         super().__init__(*args, **kwargs)
         if not site or not config:
             raise ValueError(
@@ -66,10 +67,12 @@ class ConfigurableCarSpider(scrapy.Spider):
             wait_until=EC.presence_of_all_elements_located((By.CSS_SELECTOR, wait_css)),
         )
 
-    def parse(self, response):
+    def parse(self, response, page_num=1):
         # cards
         cards = self._sel_nodes(response, self.listing["cards"])
-        self.logger.info("Found %d cards on %s", len(cards), response.url)
+        self.logger.info(
+            "📄 Page %d — Found %d cards on %s", page_num, len(cards), response.url
+        )
 
         for card in cards:
             title = (self._get_one(card, self.listing["title"]) or "").strip()
@@ -96,44 +99,45 @@ class ConfigurableCarSpider(scrapy.Spider):
             button_css = btn_rule["css"]
 
             if first_card_link_css:
-                # Safely quote selectors for JS using JSON string literals
                 button_css_js = json.dumps(button_css)
                 first_css_js = json.dumps(first_card_link_css)
+
+                next_page_num = page_num + 1
+                self.logger.info(
+                    "➡️ Clicking next button to go to page %d...", next_page_num
+                )
 
                 yield SeleniumRequest(
                     url=response.url,
                     callback=self.parse,
                     dont_filter=True,
+                    cb_kwargs={"page_num": next_page_num},
                     script=f"""
-                        // Capture first card BEFORE click
                         const firstCardBefore = document.querySelector({first_css_js});
-                        const hrefBefore = firstCardBefore ? firstCardBefore.href : null;
-
-                        // Find and click the next button
                         const button = document.querySelector({button_css_js});
-                        if (!button) {{
-                            return false; // no next button -> stop paginating
-                        }}
+                        if (!button || button.disabled) return false;
                         button.click();
 
-                        // Wait up to ~5s for first card href to change
+                        // Wait for the old element to become stale (detached from DOM)
                         return new Promise((resolve) => {{
                             let attempts = 0;
-                            const maxAttempts = 50;
                             const iv = setInterval(() => {{
                                 attempts++;
-                                const firstCardNow = document.querySelector({first_css_js});
-                                const hrefNow = firstCardNow ? firstCardNow.href : null;
-                                if (hrefNow && hrefNow !== hrefBefore) {{
+                                try {{
+                                    firstCardBefore.isConnected;
+                                    if (!firstCardBefore.isConnected) {{
+                                        clearInterval(iv); resolve(true);
+                                    }}
+                                }} catch(e) {{
                                     clearInterval(iv); resolve(true);
-                                }} else if (attempts >= maxAttempts) {{
+                                }}
+                                if (attempts >= 50) {{
                                     clearInterval(iv); resolve(false);
                                 }}
                             }}, 100);
                         }});
                     """,
                     wait_time=10,
-                    # 2) Wait for the LISTING grid, not the detail page
                     wait_until=EC.presence_of_all_elements_located(
                         (By.CSS_SELECTOR, self.listing["wait_css"])
                     ),
@@ -142,9 +146,16 @@ class ConfigurableCarSpider(scrapy.Spider):
         elif anc_rule:
             next_href = self._get_one(response, anc_rule)
             if next_href:
+                next_page_num = page_num + 1
+                self.logger.info(
+                    "➡️ Navigating to next page %d via anchor: %s",
+                    next_page_num,
+                    next_href,
+                )
                 yield SeleniumRequest(
                     url=next_href,
                     callback=self.parse,
+                    cb_kwargs={"page_num": next_page_num},
                     wait_time=10,
                     wait_until=EC.presence_of_all_elements_located(
                         (By.CSS_SELECTOR, self.listing["wait_css"])
@@ -152,18 +163,23 @@ class ConfigurableCarSpider(scrapy.Spider):
                 )
 
     def parse_detail(self, response, title):
-        item = BaseScrapperItem()
+        item = PropertiesScrapperItem()
         item["title"] = title
         item["url"] = response.url
-
         fields = self.detail.get("fields", {})
 
-        # Generic parsing (skip images, description, price, currency)
+        # ---------------- Generic Fields ----------------
         for key, rule in fields.items():
-            if key in ("images", "description", "price", "currency"):
+            if key in (
+                "images",
+                "description",
+                "price",
+                "currency",
+                "coordinates",
+                "amenities",
+            ):
                 continue
 
-            # ✅ If default_value exists, skip parsing and assign directly
             if isinstance(rule, dict) and "default_value" in rule:
                 item[key] = rule["default_value"]
                 continue
@@ -181,58 +197,88 @@ class ConfigurableCarSpider(scrapy.Spider):
                 if not re.match(r"^data:image/[^;]+;base64,", u or "")
             ]
 
-        # ---------------- Description ----------------
-        if "description" in fields:
-            rule = fields["description"]
-
-            if rule and rule.get("get_all") is True:
-                parts = self._get_all(response, rule) or []
-                if isinstance(parts, str):
-                    parts = [parts]
-
-                html_blob = "\n".join(p for p in parts if p)
-                text = remove_tags(html_blob)
-                text = text.replace("\u00a0", " ")
-                item["description"] = re.sub(r"\s+", " ", text).strip()
-
-            else:
-                html = self._get_one(response, rule)
-                if html:
-                    text = remove_tags(html)
-                    text = text.replace("\u00a0", " ")
-                    item["description"] = re.sub(r"\s+", " ", text).strip()
-
-        # ---------------- Doors ----------------
-        if "doors" in self.detail:
-            doors_src = self._get_one(response, self.detail["doors"])
-            if doors_src:
-                m = re.search(r"(\d+)", doors_src)
+        # ---------------- Coordinates ----------------
+        if "coordinates" in fields:
+            src = self._get_one(response, fields["coordinates"])
+            if src:
+                m = re.search(r"([+-]?\d+(?:\.\d+)?),\s*([+-]?\d+(?:\.\d+)?)", str(src))
                 if m:
-                    item["doors"] = int(m.group(1))
+                    item["coordinates"] = {
+                        "lat": float(m.group(1)),
+                        "lng": float(m.group(2)),
+                    }
+
+        # ---------------- Description & Amenities ----------------
+        for key, out_key in (
+            ("description", "description"),
+            ("amenities", "amenities"),
+        ):
+            if key in fields:
+                rule = fields[key]
+
+                if isinstance(rule, dict) and "default_value" in rule:
+                    item[out_key] = rule["default_value"]
+                    continue
+
+                if rule and rule.get("get_all") is True:
+                    parts = self._get_all(response, rule) or []
+                    if isinstance(parts, str):
+                        parts = [parts]
+
+                    cleaned_parts = []
+                    for p in parts:
+                        if not p:
+                            continue
+                        t = self.sanitize_text(remove_tags(p))
+                        if t:
+                            cleaned_parts.append(t)
+
+                    if out_key == "amenities":
+                        item[out_key] = ", ".join(cleaned_parts)
+                    else:
+                        item[out_key] = " ".join(cleaned_parts)
+
+                else:
+                    html = self._get_one(response, rule)
+                    if html:
+                        text = self.sanitize_text(remove_tags(html))
+                        if out_key == "amenities":
+                            # Turn bullets/newlines/semicolons into commas
+                            text = re.sub(r"\s*[•\|\n\r;/]\s*", ", ", text)
+                            text = re.sub(r"(,\s*){2,}", ", ", text).strip(", ")
+                        item[out_key] = text
 
         # ---------------- Price ----------------
         if "price" in fields:
-            price = self._get_one(response, fields["price"])
-            if price:
-                price_text = str(price).strip().replace("\u00a0", " ")  # NBSP → space
-                m = re.search(r"(\d[\d\s,]*)(?:[.,]\d{1,2})?", price_text)
-                if m:
-                    normalized = re.sub(
-                        r"[\s,]", "", m.group(1)
-                    )  # drop spaces & commas
-                    if normalized.isdigit():
-                        item["price"] = int(normalized)
+            if isinstance(fields["price"], dict) and "default_value" in fields["price"]:
+                item["price"] = fields["price"]["default_value"]
+            else:
+                price = self._get_one(response, fields["price"])
+                if price:
+                    price_text = str(price).strip().replace("\u00a0", " ")
+                    m = re.search(r"(\d[\d\s,]*)(?:[.,]\d{1,2})?", price_text)
+                    if m:
+                        normalized = re.sub(r"[\s,]", "", m.group(1))
+                        normalized = normalized.replace("-", "").replace("/", "")
+                        if normalized.isdigit():
+                            item["price"] = int(normalized)
 
-        # ---------------- Currency ----------------
         if "currency" in fields:
-            currency = self._get_one(response, fields["currency"])
-            if currency:
-                currency_text = currency.strip()
-                if re.search(r"\d", currency_text) or (
-                    re.search(r"[A-Za-z]{2,3}", currency_text) and len(currency_text)
-                ):
-                    cur_match = re.search(r"([A-Za-z]+)", currency_text)
-                    item["currency"] = cur_match.group(1) if cur_match else None
+            if (
+                isinstance(fields["currency"], dict)
+                and "default_value" in fields["currency"]
+            ):
+                item["currency"] = fields["currency"]["default_value"]
+            else:
+                currency = self._get_one(response, fields["currency"])
+                if currency:
+                    currency_text = currency.strip()
+                    if re.search(r"\d", currency_text) or (
+                        re.search(r"[A-Za-z]{2,3}", currency_text)
+                        and len(currency_text)
+                    ):
+                        cur_match = re.search(r"([A-Za-z]+)", currency_text)
+                        item["currency"] = cur_match.group(1) if cur_match else None
 
         yield item
 
@@ -250,3 +296,11 @@ class ConfigurableCarSpider(scrapy.Spider):
                 return str(c)
         tried = " | ".join(str(c) for c in candidates)
         raise FileNotFoundError(f"Config not found. Tried: {tried}")
+
+    def sanitize_text(self, s: str) -> str:
+        # Normalize spaces, remove U+FFFD and control chars
+        s = s.replace("\u00a0", " ")  # NBSP -> space
+        s = s.replace("\ufffd", "")  # drop replacement char
+        s = re.sub(r"[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]", "", s)  # control chars
+        s = re.sub(r"\s+", " ", s).strip()
+        return s
