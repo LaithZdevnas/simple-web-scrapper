@@ -1,7 +1,8 @@
 import json
 import re
 from pathlib import Path
-from typing import Dict, Iterable, Optional, Set
+from typing import Any, Dict, Iterable, Optional, Set, Union
+from urllib.parse import urljoin as urljoin_href
 
 import scrapy
 from scrapy.http import Response
@@ -69,14 +70,17 @@ class ConfigurableBaseSpider(scrapy.Spider):
         )
 
     def parse(self, response: Response, page_num: int = 1):  # type: ignore[override]
-        cards = self.get_listing_cards(response)
-        self.log_listing_summary(response, len(list(cards)), page_num)
+        cards = list(self.get_listing_cards(response))
+        self.log_listing_summary(response, len(cards), page_num)
 
         for card in cards:
             title = self.extract_card_title(card)
             href = self.extract_card_href(card)
+            listing_fields = self.extract_card_listing_fields(response, card)
             if href:
-                request = self.build_detail_request(response, href, title)
+                request = self.build_detail_request(
+                    response, href, title, listing_fields
+                )
                 self.logger.debug("Queueing detail request for %s", request.url)
                 yield request
             else:
@@ -114,7 +118,11 @@ class ConfigurableBaseSpider(scrapy.Spider):
         return href
 
     def build_detail_request(
-        self, response: Response, href: str, title: str
+        self,
+        response: Response,
+        href: str,
+        title: str,
+        listing_fields: Optional[Dict[str, Any]] = None,
     ) -> SeleniumRequest:
         wait_css = self.detail["wait_css"]
         request_kwargs: Dict = {
@@ -122,8 +130,11 @@ class ConfigurableBaseSpider(scrapy.Spider):
             "callback": self.parse_detail,
             "wait_time": self.default_wait_time,
             "wait_until": EC.presence_of_element_located((By.CSS_SELECTOR, wait_css)),
-            "cb_kwargs": {"title": title},
         }
+        cb_kwargs: Dict[str, Any] = {"title": title}
+        if listing_fields:
+            cb_kwargs["listing_fields"] = listing_fields
+        request_kwargs["cb_kwargs"] = cb_kwargs
         return SeleniumRequest(**request_kwargs)
 
     # ------------------------------------------------------------------
@@ -242,10 +253,18 @@ class ConfigurableBaseSpider(scrapy.Spider):
     # ------------------------------------------------------------------
     # Detail helpers
     # ------------------------------------------------------------------
-    def parse_detail(self, response: Response, title: str):
+    def parse_detail(
+        self,
+        response: Response,
+        title: str,
+        listing_fields: Optional[Dict[str, Any]] = None,
+    ):
         item = self.item_cls()
         item["title"] = title
         item["url"] = response.url
+
+        if listing_fields:
+            self.populate_listing_fields(response, item, listing_fields)
 
         fields = self.detail.get("fields", {})
         self.logger.debug("Parsing detail page for %s", response.url)
@@ -268,16 +287,18 @@ class ConfigurableBaseSpider(scrapy.Spider):
                 continue
 
             if isinstance(rule, dict) and "default_value" in rule:
-                item[key] = rule["default_value"]
-                self.logger.debug(
-                    "Field %s assigned default value %s", key, rule["default_value"]
-                )
+                cleaned = self._clean_extracted_value(rule["default_value"])
+                if cleaned is not None:
+                    item[key] = cleaned
+                    self.logger.debug(
+                        "Field %s assigned default value %s", key, rule["default_value"]
+                    )
                 continue
 
             val = self._get_one(response, rule)
-            if val is not None:
-                val = remove_tags(val.strip())
-                item[key] = val
+            cleaned = self._clean_extracted_value(val)
+            if cleaned is not None:
+                item[key] = cleaned
                 self.logger.debug("Field %s extracted as %s", key, item[key])
 
     def populate_images(
@@ -288,13 +309,10 @@ class ConfigurableBaseSpider(scrapy.Spider):
             return
 
         raw_urls = self._get_all(response, images_rule)
-        images = [
-            response.urljoin(u)
-            for u in raw_urls
-            if not re.match(r"^data:image/[^;]+;base64,", u or "")
-        ]
-        item["images"] = images
-        self.logger.debug("Collected %d images", len(images))
+        images = self._normalize_image_values(response, raw_urls)
+        if images:
+            item["images"] = images
+            self.logger.debug("Collected %d images", len(images))
 
     def populate_description(
         self, response: Response, item: scrapy.Item, fields: Dict
@@ -304,8 +322,10 @@ class ConfigurableBaseSpider(scrapy.Spider):
             return
 
         if isinstance(rule, dict) and rule.get("default_value") is not None:
-            item["description"] = rule["default_value"]
-            self.logger.debug("Description assigned default value")
+            description = self._normalize_description_value(rule["default_value"])
+            if description:
+                item["description"] = description
+                self.logger.debug("Description assigned default value")
             return
 
         if rule.get("get_all") is True:
@@ -318,11 +338,13 @@ class ConfigurableBaseSpider(scrapy.Spider):
             html = self._get_one(response, rule)
             text = remove_tags(html) if html else ""
 
-        text = text.replace("\u00a0", " ")
-        item["description"] = re.sub(r"\s+", " ", text).strip()
-        self.logger.debug(
-            "Description populated with %d characters", len(item.get("description", ""))
-        )
+        description = self._normalize_description_value(text)
+        if description:
+            item["description"] = description
+            self.logger.debug(
+                "Description populated with %d characters",
+                len(item.get("description", "")),
+            )
 
     def populate_price(
         self, response: Response, item: scrapy.Item, fields: Dict
@@ -332,18 +354,16 @@ class ConfigurableBaseSpider(scrapy.Spider):
             return
 
         if isinstance(price_rule, dict) and "default_value" in price_rule:
-            item["price"] = price_rule["default_value"]
-            self.logger.debug(
-                "Price assigned default value %s", price_rule["default_value"]
-            )
+            normalized = self._normalize_price_value(price_rule["default_value"])
+            if normalized is not None:
+                item["price"] = normalized
+                self.logger.debug(
+                    "Price assigned default value %s", price_rule["default_value"]
+                )
             return
 
         price = self._get_one(response, price_rule)
-        if not price:
-            return
-
-        price_text = str(price).strip().replace("\u00a0", " ")
-        normalized = self.normalize_price_digits(price_text)
+        normalized = self._normalize_price_value(price)
         if normalized is not None:
             item["price"] = normalized
             self.logger.debug("Price normalised to %s", normalized)
@@ -365,28 +385,80 @@ class ConfigurableBaseSpider(scrapy.Spider):
             return
 
         if isinstance(currency_rule, dict) and "default_value" in currency_rule:
-            item["currency"] = currency_rule["default_value"]
-            self.logger.debug(
-                "Currency assigned default value %s", currency_rule["default_value"]
-            )
+            currency = self._normalize_currency_value(currency_rule["default_value"])
+            if currency:
+                item["currency"] = currency
+                self.logger.debug(
+                    "Currency assigned default value %s", currency_rule["default_value"]
+                )
             return
 
         currency = self._get_one(response, currency_rule)
-        if not currency:
-            return
-
-        currency_text = currency.strip()
-        if re.search(r"\d", currency_text) or re.search(
-            r"[A-Za-z]{2,3}", currency_text
-        ):
-            match = re.search(r"([A-Za-z]+)", currency_text)
-            item["currency"] = match.group(1) if match else None
+        currency = self._normalize_currency_value(currency)
+        if currency:
+            item["currency"] = currency
             self.logger.debug("Currency extracted as %s", item.get("currency"))
 
     def populate_additional_detail(
         self, response: Response, item: scrapy.Item, fields: Dict
     ) -> None:
         """Hook for subclasses to enrich the item."""
+
+    def populate_listing_fields(
+        self,
+        response: Response,
+        item: scrapy.Item,
+        listing_fields: Dict[str, Any],
+    ) -> None:
+        reserved = self.get_reserved_detail_keys()
+
+        base_url = listing_fields.pop("_listing_base", response.url)
+
+        if "images" in listing_fields:
+            images = self._normalize_image_values(base_url, listing_fields["images"])
+            if images:
+                item["images"] = images
+                self.logger.debug(
+                    "Listing images pre-populated with %d entries", len(images)
+                )
+
+        if "description" in listing_fields:
+            description = self._normalize_description_value(
+                listing_fields.get("description")
+            )
+            if description:
+                item["description"] = description
+                self.logger.debug(
+                    "Listing description pre-populated with %d characters",
+                    len(description),
+                )
+
+        if "price" in listing_fields:
+            price = self._normalize_price_value(listing_fields.get("price"))
+            if price is not None:
+                item["price"] = price
+                self.logger.debug(
+                    "Listing price pre-populated as %s", item.get("price")
+                )
+
+        if "currency" in listing_fields:
+            currency = self._normalize_currency_value(listing_fields.get("currency"))
+            if currency:
+                item["currency"] = currency
+                self.logger.debug(
+                    "Listing currency pre-populated as %s", item.get("currency")
+                )
+
+        for key, value in listing_fields.items():
+            if key in reserved:
+                continue
+
+            cleaned = self._clean_extracted_value(value)
+            if cleaned is not None:
+                item[key] = cleaned
+                self.logger.debug(
+                    "Listing field %s pre-populated as %s", key, item[key]
+                )
 
     # ------------------------------------------------------------------
     # Selector utilities
@@ -410,6 +482,162 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
     def get_reserved_detail_keys(self) -> Set[str]:
         return {"images", "description", "price", "currency"}
+
+    def extract_card_listing_fields(self, response: Response, card) -> Dict[str, Any]:
+        fields_cfg = self.listing.get("fields", {}) or {}
+        listing_data: Dict[str, Any] = {}
+
+        for key, rule in fields_cfg.items():
+            value: Any = None
+
+            if isinstance(rule, dict) and "default_value" in rule:
+                value = rule["default_value"]
+            elif key == "images":
+                extracted = self._get_all(card, rule)
+                cleaned = self._clean_extracted_sequence(extracted or [])
+                value = self._normalize_image_values(response, cleaned)
+            elif key == "description":
+                if isinstance(rule, dict) and rule.get("get_all") is True:
+                    parts = self._get_all(card, rule) or []
+                    if isinstance(parts, str):
+                        parts = [parts]
+                    html_blob = "\n".join(p for p in parts if p)
+                    value = self._normalize_description_value(html_blob)
+                else:
+                    html = self._get_one(card, rule)
+                    value = self._normalize_description_value(html)
+            elif key == "price":
+                candidate = self._get_one(card, rule)
+                value = self._normalize_price_value(candidate)
+            elif key == "currency":
+                candidate = self._get_one(card, rule)
+                value = self._normalize_currency_value(candidate)
+            elif isinstance(rule, dict) and rule.get("get_all") is True:
+                values = self._get_all(card, rule) or []
+                cleaned = self._clean_extracted_sequence(values)
+                value = cleaned if cleaned else None
+            else:
+                value = self._get_one(card, rule)
+                value = self._clean_extracted_value(value)
+
+            if value is None:
+                continue
+
+            if isinstance(value, (list, tuple, set)) and not value:
+                continue
+
+            listing_data[key] = value
+            self.logger.debug("Listing field %s extracted as %s", key, value)
+
+        if listing_data:
+            listing_data["_listing_base"] = response.url
+
+        return listing_data
+
+    def _clean_extracted_value(self, value: Optional[Any]) -> Optional[Any]:
+        if value is None:
+            return None
+        if isinstance(value, str):
+            cleaned = remove_tags(value).strip()
+            return cleaned or None
+        return value
+
+    def _clean_extracted_sequence(self, values: Iterable) -> list:
+        cleaned_list = []
+        for value in values:
+            cleaned = self._clean_extracted_value(value)
+            if cleaned is not None:
+                cleaned_list.append(cleaned)
+        return cleaned_list
+
+    def _normalize_image_values(self, base: Union[Response, str], values: Any) -> list:
+        if values is None:
+            return []
+
+        if isinstance(values, str):
+            raw_list = [values]
+        elif isinstance(values, (list, tuple, set)):
+            raw_list = list(values)
+        else:
+            raw_list = [values]
+
+        if isinstance(base, Response):
+            join_url = base.urljoin
+        else:
+            base_url = str(base or "")
+
+            def join_url(url: str) -> str:
+                return urljoin_href(base_url, url)
+
+        images = []
+        for raw in raw_list:
+            if not isinstance(raw, str):
+                continue
+            url = raw.strip()
+            if not url:
+                continue
+            if re.match(r"^data:image/[^;]+;base64,", url or ""):
+                continue
+            images.append(join_url(url))
+        return images
+
+    def _normalize_description_value(self, value: Any) -> Optional[str]:
+        if value is None:
+            return None
+
+        if isinstance(value, (list, tuple, set)):
+            parts = [str(v) for v in value if v]
+            text = "\n".join(parts)
+        else:
+            text = str(value)
+
+        text = remove_tags(text)
+        text = text.replace("\u00a0", " ")
+        cleaned = re.sub(r"\s+", " ", text).strip()
+        return cleaned or None
+
+    def _normalize_price_value(self, value: Any) -> Optional[int]:
+        if value is None:
+            return None
+
+        candidates: Iterable[Any]
+        if isinstance(value, (list, tuple, set)):
+            candidates = value
+        else:
+            candidates = (value,)
+
+        for candidate in candidates:
+            if candidate is None:
+                continue
+            price_text = str(candidate).strip().replace("\u00a0", " ")
+            normalized = self.normalize_price_digits(price_text)
+            if normalized is not None:
+                return normalized
+        return None
+
+    def _normalize_currency_value(self, value: Any) -> Optional[str]:
+        if value is None:
+            return None
+
+        candidates: Iterable[Any]
+        if isinstance(value, (list, tuple, set)):
+            candidates = value
+        else:
+            candidates = (value,)
+
+        for candidate in candidates:
+            if not isinstance(candidate, str):
+                continue
+            currency_text = candidate.strip()
+            if not currency_text:
+                continue
+            if re.search(r"\d+", currency_text) or (2 <= len(currency_text) <= 3):
+                match = re.search(r"([A-Za-z]+)", currency_text)
+                if match:
+                    return match.group(1)
+            else:
+                return currency_text
+        return None
 
     @staticmethod
     def _resolve_config_path(config: str) -> str:
