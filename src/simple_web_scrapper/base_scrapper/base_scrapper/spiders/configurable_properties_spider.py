@@ -3,19 +3,15 @@ import re
 from typing import Dict, Optional
 
 from scrapy.http import Response
-
-from .base_configurable_spider import ConfigurableBaseSpider
-from ..items import PropertiesScrapperItem
 from w3lib.html import remove_tags
+
+from ..items import PropertiesScrapperItem
+from .base_configurable_spider import ConfigurableBaseSpider
 
 
 class ConfigurablePropertiesSpider(ConfigurableBaseSpider):
     name = "configurable_properties_spider"
     item_cls = PropertiesScrapperItem
-    pagination_dont_filter = True
-
-    def log_listing_summary(self, response: Response, card_count: int, page_num: int) -> None:
-        self.logger.info("📄 Page %d — Found %d cards on %s", page_num, card_count, response.url)
 
     def get_pagination_cb_kwargs(self, next_page_num: int):
         return {"page_num": next_page_num}
@@ -24,35 +20,6 @@ class ConfigurablePropertiesSpider(ConfigurableBaseSpider):
         reserved = super().get_reserved_detail_keys()
         reserved.update({"coordinates", "amenities"})
         return reserved
-
-    # ------------------------------------------------------------------
-    # Pagination customisation
-    # ------------------------------------------------------------------
-    def get_next_button_script(self, button_css: str, first_card_link_css: str) -> str:
-        button_css_js = json.dumps(button_css)
-        first_css_js = json.dumps(first_card_link_css)
-        return f"""
-            const firstCardBefore = document.querySelector({first_css_js});
-            const button = document.querySelector({button_css_js});
-            if (!button || button.disabled) return false;
-            button.click();
-            return new Promise((resolve) => {{
-                let attempts = 0;
-                const iv = setInterval(() => {{
-                    attempts++;
-                    try {{
-                        if (!firstCardBefore.isConnected) {{
-                            clearInterval(iv); resolve(true);
-                        }}
-                    }} catch (e) {{
-                        clearInterval(iv); resolve(true);
-                    }}
-                    if (attempts >= 50) {{
-                        clearInterval(iv); resolve(false);
-                    }}
-                }}, 100);
-            }});
-        """
 
     # ------------------------------------------------------------------
     # Detail parsing customisation
@@ -95,30 +62,13 @@ class ConfigurablePropertiesSpider(ConfigurableBaseSpider):
                 return
             text = self.sanitize_text(remove_tags(html))
             if item_key == "amenities":
-                text = re.sub(r"\s*[•\|\n\r;/]\s*", ", ", text)
+                text = re.sub(r"\s*[•|\n\r;/]\s*", ", ", text)
                 text = re.sub(r"(,\s*){2,}", ", ", text).strip(", ")
             item[item_key] = text
 
-    def populate_price(self, response: Response, item, fields: Dict) -> None:
-        super().populate_price(response, item, fields)
-        if "price" in item and isinstance(item["price"], int):
-            self.logger.debug("Property price normalised to %s", item["price"])
-
-    def normalize_price_digits(self, price_text: str) -> Optional[int]:
-        match = re.search(r"(\d[\d\s,\-/]*)(?:[.,]\d{1,2})?", price_text)
-        if not match:
-            return None
-        normalized = re.sub(r"[\s,\-/]", "", match.group(1))
-        if normalized.isdigit():
-            return int(normalized)
-        return None
-
-    def populate_currency(self, response: Response, item, fields: Dict) -> None:
-        super().populate_currency(response, item, fields)
-        if "currency" in item:
-            self.logger.debug("Currency finalised as %s", item["currency"])
-
-    def populate_additional_detail(self, response: Response, item, fields: Dict) -> None:
+    def populate_additional_detail(
+        self, response: Response, item, fields: Dict
+    ) -> None:
         self.populate_coordinates(response, item, fields)
 
     def populate_coordinates(self, response: Response, item, fields: Dict) -> None:

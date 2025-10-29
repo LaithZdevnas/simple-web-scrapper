@@ -192,7 +192,7 @@
     },
 
     "detail": {
-      "wait_css": "main[id='main-wrap'] li:nth-child(6) div:nth-child(1)",
+      "wait_css": "#main-wrap section div.property-banner-item",
 
       "fields": {
         "price":        { "xpath": "//div[@role='main']//span[1]/text()" },
@@ -209,7 +209,7 @@
         "location":     { "xpath": "//div[@role='main']//div//address[@role='contentinfo']/text()" },
         "sub_location": { "xpath": "//span[@aria-labelledby='area-label']/text()" },
         "description":  { "css": "div[id='property-description-wrap'] div div div div p" , "get_all": true },
-        "images":       { "css": "#main-wrap section div.property-banner-item::attr(data-src)" },
+        "images":       { "xpath": "//div[@class='gallery-hidden']/a/@data-src" },
 
 
         "coordinates":  { "css": "" },
@@ -267,7 +267,7 @@
     "start_url": "https://uniqueproperties.ae/en/properties",
 
     "listing": {
-      "wait_css": "//body/main/section/div/div/div/div/div/div[@id='pills-tabContent']/div[@id='listView']/div[1]/div[@class='col-12 col-lg-6 col-md-12 p-2']",
+      "wait_css": "div[id='listView'] div[class='row g-4']",
 
       "cards":       { "xpath": "//body/main/section/div/div/div/div/div/div[@id='pills-tabContent']/div[@id='listView']/div[1]/div[@class='col-12 col-lg-6 col-md-12 p-2']" },
       "title":       { "xpath": "//div/div[@class='col-md-7']//small[@class='text-black']/text()" },
@@ -276,27 +276,26 @@
       "next_button": { "css": "li button:not([disabled])" },
       "next_anchor": { "css": "" },
 
-      "first_card_link_css": "//body/main/section/div/div/div/div/div/div[@id='pills-tabContent']/div[@id='listView']/div[1]/div[@class='col-12 col-lg-6 col-md-12 p-2'][1]"
+      "first_card_link_css": "div[id='listView'] div[class='row g-4']"
     },
 
     "detail": {
-      "wait_css": "div[data-testid='expose-property-description-text'] div",
+      "wait_css": "body",
 
       "fields": {
         "price":        { "css": "li:nth-child(4) small:nth-child(1)::text" },
         "currency":     { "css": "li:nth-child(4) small:nth-child(1)::text" },
-        "description":  { "xpath": "//body/main/section/div/div/div/div[2]/div[1]/span[1]/text()" },
-
-        "property_type":{ "css": "body div[id='__next'] section section ul:nth-child(1) li:nth-child(1) p:nth-child(2)::text" },
-        "bedrooms":     { "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bedrooms')]/text()" },
-        "bathrooms":    { "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bathrooms')]/text()" },
-        "city":         { "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[2]/button/text()" },
-        "location":     { "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[3]/button/text()" },
-        "images":       { "xpath": "//*[@id=\"__next\"]/div/div[5]/div[1]/button/img/@src" },
+        "description":  { "css": ".textLessProp.d-block::text", "get_all" : true },
+        "bedrooms":     { "xpath": "//small[i[contains(@class, 'fa-bed')]]/text()[last()]" },
+        "bathrooms":    { "xpath": "//small[i[contains(@class, 'fa-bath')]]/text()[last()]" },
+        "size":         { "xpath": "//small[i[contains(@class, 'bi-arrows')]]/text()[last()]" },
+        "location":     { "xpath": "//body/main/section/div/div/div/div/div/div/small[1]/text()" },
+        "city":         { "default_value": "Dubai" },
+        "images":       { "xpath": "//body/main/section/div/div/div/div/div/div/div[@class='sideImg']/a/img/@src" },
         "rent_or_buy":  { "default_value": "Buy" },
-        "size":         { "xpath": "" },
-        "amenities":    { "xpath": "" },
-        "sub_location": { "xpath": "" },
+        "property_type":{ "default_value": "property" },
+        "amenities":    { "xpath": "//section[@id='Amenities']//div[@class='text-primary my-auto']/p", "get_all" : true },
+
         "coordinates":  { "css":   "" },
         "slug":         { "xpath": "" },
         "is_poa":       { "xpath": "" },

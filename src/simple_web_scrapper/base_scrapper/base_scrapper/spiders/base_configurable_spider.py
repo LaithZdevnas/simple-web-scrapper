@@ -26,7 +26,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
     default_wait_time = 10
     pagination_dont_filter = False
 
-    def __init__(self, site: Optional[str] = None, config: Optional[str] = None, *args, **kwargs):
+    def __init__(
+        self, site: Optional[str] = None, config: Optional[str] = None, *args, **kwargs
+    ):
         super().__init__(*args, **kwargs)
         if not site or not config:
             raise ValueError(
@@ -68,7 +70,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
     def parse(self, response: Response, page_num: int = 1):  # type: ignore[override]
         cards = self.get_listing_cards(response)
-        self.log_listing_summary(response, len(cards), page_num)
+        self.log_listing_summary(response, len(list(cards)), page_num)
 
         for card in cards:
             title = self.extract_card_title(card)
@@ -91,23 +93,29 @@ class ConfigurableBaseSpider(scrapy.Spider):
         self.logger.debug("Extracted %d listing cards", len(cards))
         return cards
 
-    def log_listing_summary(self, response: Response, card_count: int, page_num: int) -> None:
-        self.logger.info("Found %d cards on %s (page %d)", card_count, response.url, page_num)
+    def log_listing_summary(
+        self, response: Response, card_count: int, page_num: int
+    ) -> None:
+        self.logger.info(
+            "Found %d cards on %s (page %d)", card_count, response.url, page_num
+        )
 
-    def extract_card_title(self, card: Selector) -> str:
+    def extract_card_title(self, card) -> str:
         rule = self.listing.get("title")
         title = (self._get_one(card, rule) or "").strip()
         self.logger.debug("Extracted title '%s'", title)
         return title
 
-    def extract_card_href(self, card: Selector) -> Optional[str]:
+    def extract_card_href(self, card) -> Optional[str]:
         rule = self.listing.get("detail_link")
         href = self._get_one(card, rule)
         if href:
             href = href.strip()
         return href
 
-    def build_detail_request(self, response: Response, href: str, title: str) -> SeleniumRequest:
+    def build_detail_request(
+        self, response: Response, href: str, title: str
+    ) -> SeleniumRequest:
         wait_css = self.detail["wait_css"]
         request_kwargs: Dict = {
             "url": response.urljoin(href),
@@ -121,7 +129,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
     # ------------------------------------------------------------------
     # Pagination helpers
     # ------------------------------------------------------------------
-    def handle_pagination(self, response: Response, page_num: int) -> Iterable[SeleniumRequest]:
+    def handle_pagination(
+        self, response: Response, page_num: int
+    ) -> Iterable[SeleniumRequest]:
         btn_rule = self.listing.get("next_button")
         anc_rule = self.listing.get("next_anchor")
 
@@ -163,7 +173,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
             "callback": self.parse,
             "script": script,
             "wait_time": self.default_wait_time,
-            "wait_until": EC.presence_of_all_elements_located((By.CSS_SELECTOR, self.listing["wait_css"])),
+            "wait_until": EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, self.listing["wait_css"])
+            ),
         }
         if cb_kwargs:
             request_kwargs["cb_kwargs"] = cb_kwargs
@@ -181,13 +193,17 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
         next_page_num = page_num + 1
         cb_kwargs = self.get_pagination_cb_kwargs(next_page_num)
-        self.logger.info("Navigating to page %d via anchor %s", next_page_num, next_href)
+        self.logger.info(
+            "Navigating to page %d via anchor %s", next_page_num, next_href
+        )
 
         request_kwargs: Dict = {
             "url": next_href,
             "callback": self.parse,
             "wait_time": self.default_wait_time,
-            "wait_until": EC.presence_of_all_elements_located((By.CSS_SELECTOR, self.listing["wait_css"])),
+            "wait_until": EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, self.listing["wait_css"])
+            ),
         }
         if cb_kwargs:
             request_kwargs["cb_kwargs"] = cb_kwargs
@@ -243,7 +259,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
         yield item
 
-    def populate_generic_fields(self, response: Response, item: scrapy.Item, fields: Dict) -> None:
+    def populate_generic_fields(
+        self, response: Response, item: scrapy.Item, fields: Dict
+    ) -> None:
         reserved = self.get_reserved_detail_keys()
         for key, rule in fields.items():
             if key in reserved:
@@ -251,15 +269,20 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
             if isinstance(rule, dict) and "default_value" in rule:
                 item[key] = rule["default_value"]
-                self.logger.debug("Field %s assigned default value %s", key, rule["default_value"])
+                self.logger.debug(
+                    "Field %s assigned default value %s", key, rule["default_value"]
+                )
                 continue
 
             val = self._get_one(response, rule)
             if val is not None:
-                item[key] = val.strip()
+                val = remove_tags(val.strip())
+                item[key] = val
                 self.logger.debug("Field %s extracted as %s", key, item[key])
 
-    def populate_images(self, response: Response, item: scrapy.Item, fields: Dict) -> None:
+    def populate_images(
+        self, response: Response, item: scrapy.Item, fields: Dict
+    ) -> None:
         images_rule = fields.get("images")
         if not images_rule:
             return
@@ -273,7 +296,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
         item["images"] = images
         self.logger.debug("Collected %d images", len(images))
 
-    def populate_description(self, response: Response, item: scrapy.Item, fields: Dict) -> None:
+    def populate_description(
+        self, response: Response, item: scrapy.Item, fields: Dict
+    ) -> None:
         rule = fields.get("description")
         if not rule:
             return
@@ -295,16 +320,22 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
         text = text.replace("\u00a0", " ")
         item["description"] = re.sub(r"\s+", " ", text).strip()
-        self.logger.debug("Description populated with %d characters", len(item.get("description", "")))
+        self.logger.debug(
+            "Description populated with %d characters", len(item.get("description", ""))
+        )
 
-    def populate_price(self, response: Response, item: scrapy.Item, fields: Dict) -> None:
+    def populate_price(
+        self, response: Response, item: scrapy.Item, fields: Dict
+    ) -> None:
         price_rule = fields.get("price")
         if not price_rule:
             return
 
         if isinstance(price_rule, dict) and "default_value" in price_rule:
             item["price"] = price_rule["default_value"]
-            self.logger.debug("Price assigned default value %s", price_rule["default_value"])
+            self.logger.debug(
+                "Price assigned default value %s", price_rule["default_value"]
+            )
             return
 
         price = self._get_one(response, price_rule)
@@ -318,22 +349,26 @@ class ConfigurableBaseSpider(scrapy.Spider):
             self.logger.debug("Price normalised to %s", normalized)
 
     def normalize_price_digits(self, price_text: str) -> Optional[int]:
-        match = re.search(r"(\d[\d\s,]*)(?:[.,]\d{1,2})?", price_text)
+        match = re.search(r"(\d[\d\s,\-/]*)(?:[.,]\d{1,2})?", price_text)
         if not match:
             return None
-        normalized = re.sub(r"[\s,]", "", match.group(1))
+        normalized = re.sub(r"[\s,\-/]", "", match.group(1))
         if normalized.isdigit():
             return int(normalized)
         return None
 
-    def populate_currency(self, response: Response, item: scrapy.Item, fields: Dict) -> None:
+    def populate_currency(
+        self, response: Response, item: scrapy.Item, fields: Dict
+    ) -> None:
         currency_rule = fields.get("currency")
         if not currency_rule:
             return
 
         if isinstance(currency_rule, dict) and "default_value" in currency_rule:
             item["currency"] = currency_rule["default_value"]
-            self.logger.debug("Currency assigned default value %s", currency_rule["default_value"])
+            self.logger.debug(
+                "Currency assigned default value %s", currency_rule["default_value"]
+            )
             return
 
         currency = self._get_one(response, currency_rule)
@@ -341,18 +376,22 @@ class ConfigurableBaseSpider(scrapy.Spider):
             return
 
         currency_text = currency.strip()
-        if re.search(r"\d", currency_text) or re.search(r"[A-Za-z]{2,3}", currency_text):
+        if re.search(r"\d", currency_text) or re.search(
+            r"[A-Za-z]{2,3}", currency_text
+        ):
             match = re.search(r"([A-Za-z]+)", currency_text)
             item["currency"] = match.group(1) if match else None
             self.logger.debug("Currency extracted as %s", item.get("currency"))
 
-    def populate_additional_detail(self, response: Response, item: scrapy.Item, fields: Dict) -> None:
+    def populate_additional_detail(
+        self, response: Response, item: scrapy.Item, fields: Dict
+    ) -> None:
         """Hook for subclasses to enrich the item."""
 
     # ------------------------------------------------------------------
     # Selector utilities
     # ------------------------------------------------------------------
-    def _sel_nodes(self, root: Selector, rule: Optional[Dict]):
+    def _sel_nodes(self, root, rule: Optional[Dict]):
         if not rule:
             return root.css(".__never__")
         if "css" in rule and rule["css"]:
@@ -361,11 +400,11 @@ class ConfigurableBaseSpider(scrapy.Spider):
             return root.xpath(rule["xpath"])
         return root.css(".__never__")
 
-    def _get_one(self, root: Selector, rule: Optional[Dict]):
+    def _get_one(self, root, rule: Optional[Dict]):
         sel = self._sel_nodes(root, rule)
         return sel.get() or None
 
-    def _get_all(self, root: Selector, rule: Optional[Dict]):
+    def _get_all(self, root, rule: Optional[Dict]):
         sel = self._sel_nodes(root, rule)
         return sel.getall()
 

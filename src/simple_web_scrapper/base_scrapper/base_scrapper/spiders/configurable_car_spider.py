@@ -2,19 +2,13 @@ import re
 
 from scrapy.http import Response
 
-from .base_configurable_spider import ConfigurableBaseSpider
 from ..items import BaseScrapperItem
+from .base_configurable_spider import ConfigurableBaseSpider
 
 
 class ConfigurableCarSpider(ConfigurableBaseSpider):
     name = "configurable_car_spider"
     item_cls = BaseScrapperItem
-
-    def log_listing_summary(self, response: Response, card_count: int, page_num: int) -> None:
-        self.logger.info("Found %d cards on %s", card_count, response.url)
-
-    def get_pagination_cb_kwargs(self, next_page_num: int):
-        return None
 
     def populate_additional_detail(self, response: Response, item, fields):
         self.populate_doors(response, item)
