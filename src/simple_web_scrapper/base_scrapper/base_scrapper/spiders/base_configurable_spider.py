@@ -1,7 +1,8 @@
 import json
 import re
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional, Set
+from urllib.parse import urljoin as urljoin_href
+from typing import Any, Dict, Iterable, Optional, Set, Union
 
 import scrapy
 from scrapy.http import Response
@@ -75,7 +76,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
         for card in cards:
             title = self.extract_card_title(card)
             href = self.extract_card_href(card)
-            listing_fields = self.extract_card_listing_fields(card)
+            listing_fields = self.extract_card_listing_fields(response, card)
             if href:
                 request = self.build_detail_request(response, href, title, listing_fields)
                 self.logger.debug("Queueing detail request for %s", request.url)
@@ -409,8 +410,10 @@ class ConfigurableBaseSpider(scrapy.Spider):
     ) -> None:
         reserved = self.get_reserved_detail_keys()
 
+        base_url = listing_fields.pop("_listing_base", response.url)
+
         if "images" in listing_fields:
-            images = self._normalize_image_values(response, listing_fields["images"])
+            images = self._normalize_image_values(base_url, listing_fields["images"])
             if images:
                 item["images"] = images
                 self.logger.debug(
@@ -478,16 +481,35 @@ class ConfigurableBaseSpider(scrapy.Spider):
     def get_reserved_detail_keys(self) -> Set[str]:
         return {"images", "description", "price", "currency"}
 
-    def extract_card_listing_fields(self, card) -> Dict[str, Any]:
+    def extract_card_listing_fields(self, response: Response, card) -> Dict[str, Any]:
         fields_cfg = self.listing.get("fields", {}) or {}
         listing_data: Dict[str, Any] = {}
 
         for key, rule in fields_cfg.items():
-            if self._has_non_empty_value(listing_data, key):
-                continue
+            value: Any = None
 
             if isinstance(rule, dict) and "default_value" in rule:
                 value = rule["default_value"]
+            elif key == "images":
+                extracted = self._get_all(card, rule)
+                cleaned = self._clean_extracted_sequence(extracted or [])
+                value = self._normalize_image_values(response, cleaned)
+            elif key == "description":
+                if isinstance(rule, dict) and rule.get("get_all") is True:
+                    parts = self._get_all(card, rule) or []
+                    if isinstance(parts, str):
+                        parts = [parts]
+                    html_blob = "\n".join(p for p in parts if p)
+                    value = self._normalize_description_value(html_blob)
+                else:
+                    html = self._get_one(card, rule)
+                    value = self._normalize_description_value(html)
+            elif key == "price":
+                candidate = self._get_one(card, rule)
+                value = self._normalize_price_value(candidate)
+            elif key == "currency":
+                candidate = self._get_one(card, rule)
+                value = self._normalize_currency_value(candidate)
             elif isinstance(rule, dict) and rule.get("get_all") is True:
                 values = self._get_all(card, rule) or []
                 cleaned = self._clean_extracted_sequence(values)
@@ -499,13 +521,14 @@ class ConfigurableBaseSpider(scrapy.Spider):
             if value is None:
                 continue
 
-            if isinstance(value, str) and not value:
-                continue
             if isinstance(value, (list, tuple, set)) and not value:
                 continue
 
             listing_data[key] = value
             self.logger.debug("Listing field %s extracted as %s", key, value)
+
+        if listing_data:
+            listing_data["_listing_base"] = response.url
 
         return listing_data
 
@@ -525,7 +548,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
                 cleaned_list.append(cleaned)
         return cleaned_list
 
-    def _normalize_image_values(self, response: Response, values: Any) -> list:
+    def _normalize_image_values(
+        self, base: Union[Response, str], values: Any
+    ) -> list:
         if values is None:
             return []
 
@@ -536,6 +561,14 @@ class ConfigurableBaseSpider(scrapy.Spider):
         else:
             raw_list = [values]
 
+        if isinstance(base, Response):
+            join_url = base.urljoin
+        else:
+            base_url = str(base or "")
+
+            def join_url(url: str) -> str:
+                return urljoin_href(base_url, url)
+
         images = []
         for raw in raw_list:
             if not isinstance(raw, str):
@@ -545,7 +578,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
                 continue
             if re.match(r"^data:image/[^;]+;base64,", url or ""):
                 continue
-            images.append(response.urljoin(url))
+            images.append(join_url(url))
         return images
 
     def _normalize_description_value(self, value: Any) -> Optional[str]:
@@ -607,18 +640,6 @@ class ConfigurableBaseSpider(scrapy.Spider):
             else:
                 return currency_text
         return None
-
-    def _has_non_empty_value(self, item: Dict[str, Any], key: str) -> bool:
-        if key not in item:
-            return False
-        value = item.get(key)
-        if value is None:
-            return False
-        if isinstance(value, str):
-            return value.strip() != ""
-        if isinstance(value, (list, tuple, set)):
-            return len(value) > 0
-        return True
 
     @staticmethod
     def _resolve_config_path(config: str) -> str:
