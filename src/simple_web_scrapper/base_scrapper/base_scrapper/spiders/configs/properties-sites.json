@@ -302,5 +302,88 @@
         "year":         { "xpath": "" }
       }
     }
+  },
+    "almirath": {
+    "allowed_domains": ["almirath.ae"],
+    "start_url": "https://www.almirath.ae/status/property-for-sales-in-dubai/",
+
+    "listing": {
+      "wait_css": "body > main#main-wrap > section > div > div > div:nth-of-type(1) > div:nth-of-type(2) > div",
+
+      "cards":       { "xpath": "//body/main[@id='main-wrap']/section/div/div/div[1]/div[2]/div" },
+      "title":       { "xpath": "//h2[@class='item-title']/a/text()" },
+      "detail_link": { "xpath": "//h2[@class='item-title']/a/@href" },
+      "fields": {
+        "images": { "css": "div div div.listing-thumb a img:first-child::attr(src)" }
+      },
+      "next_button": { "css": "" },
+      "next_anchor": { "css": "a[aria-label='Next']::attr(href)" },
+
+      "first_card_link_css": "body > main#main-wrap > section > div > div > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2)"
+    },
+
+    "detail": {
+      "wait_css": "body",
+
+      "fields": {
+        "price":        { "xpath": "//strong[normalize-space()='Price:']/following-sibling::span/text()" },
+        "currency":     { "xpath": "//strong[normalize-space()='Price:']/following-sibling::span/text()" },
+        "size":         { "xpath": "//strong[normalize-space()='Property Size:']/following-sibling::span/text()" },
+        "bedrooms":     { "xpath": "//strong[normalize-space()='Bedrooms:']/following-sibling::span/text()" },
+        "bathrooms":    { "xpath": "//strong[normalize-space()='Bathrooms:']/following-sibling::span/text()" },
+        "property_type":{ "xpath": "//strong[normalize-space()='Property Type:']/following-sibling::span/text()" },
+        "rent_or_buy":  { "xpath": "//strong[normalize-space()='Property Status:']/following-sibling::span/text()" },
+        "description":  { "xpath": "//div[contains(@class, 'property-description-wrap')]/div[@class='block-wrap']/div[@class='block-content-wrap']/p", "get_all" : true },
+
+        "location":     { "xpath": "" },
+        "city":         { "xpath": "" },
+        "amenities":    { "xpath": "" },
+        "coordinates":  { "css":   "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
+  },
+  "sams": {
+    "allowed_domains": ["sams.ae"],
+    "start_url": "https://sams.ae/property-status/properties-for-sale/",
+
+    "listing": {
+      "wait_css": "body > div > section#properties-listing > div > div > div.rh-ultra-list-wrapper > div.rh-ultra-list-box > div",
+
+      "cards":       { "xpath": "body > div > section#properties-listing > div > div > div.rh-ultra-list-wrapper > div.rh-ultra-list-box > div" },
+      "title":       { "xpath": "//h2[@class='item-title']/a/text()" },
+      "detail_link": { "xpath": "//h2[@class='item-title']/a/@href" },
+
+      "next_button": { "css": "" },
+      "next_anchor": { "css": "a[aria-label='Next']::attr(href)" },
+
+      "first_card_link_css": "body > main#main-wrap > section > div > div > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2)"
+    },
+
+    "detail": {
+      "wait_css": "body",
+
+      "fields": {
+        "price":        { "xpath": "//strong[normalize-space()='Price:']/following-sibling::span/text()" },
+        "currency":     { "xpath": "//strong[normalize-space()='Price:']/following-sibling::span/text()" },
+        "size":         { "xpath": "//strong[normalize-space()='Property Size:']/following-sibling::span/text()" },
+        "bedrooms":     { "xpath": "//strong[normalize-space()='Bedrooms:']/following-sibling::span/text()" },
+        "bathrooms":    { "xpath": "//strong[normalize-space()='Bathrooms:']/following-sibling::span/text()" },
+        "property_type":{ "xpath": "//strong[normalize-space()='Property Type:']/following-sibling::span/text()" },
+        "rent_or_buy":  { "xpath": "//strong[normalize-space()='Property Status:']/following-sibling::span/text()" },
+        "description":  { "xpath": "//div[contains(@class, 'property-description-wrap')]/div[@class='block-wrap']/div[@class='block-content-wrap']/p", "get_all" : true },
+        "images":       { "xpath": "//body/main/section/div/div/div/div/div/div/div[@class='sideImg']/a/img/@src" },
+
+        "location":     { "xpath": "" },
+        "city":         { "xpath": "" },
+        "amenities":    { "xpath": "" },
+        "coordinates":  { "css":   "" },
+        "slug":         { "xpath": "" },
+        "is_poa":       { "xpath": "" },
+        "year":         { "xpath": "" }
+      }
+    }
   }
 }

@@ -1,8 +1,8 @@
 import json
 import re
 from pathlib import Path
-from urllib.parse import urljoin as urljoin_href
 from typing import Any, Dict, Iterable, Optional, Set, Union
+from urllib.parse import urljoin as urljoin_href
 
 import scrapy
 from scrapy.http import Response
@@ -78,7 +78,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
             href = self.extract_card_href(card)
             listing_fields = self.extract_card_listing_fields(response, card)
             if href:
-                request = self.build_detail_request(response, href, title, listing_fields)
+                request = self.build_detail_request(
+                    response, href, title, listing_fields
+                )
                 self.logger.debug("Queueing detail request for %s", request.url)
                 yield request
             else:
@@ -548,9 +550,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
                 cleaned_list.append(cleaned)
         return cleaned_list
 
-    def _normalize_image_values(
-        self, base: Union[Response, str], values: Any
-    ) -> list:
+    def _normalize_image_values(self, base: Union[Response, str], values: Any) -> list:
         if values is None:
             return []
 
@@ -631,9 +631,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
             currency_text = candidate.strip()
             if not currency_text:
                 continue
-            if re.search(r"\d", currency_text) or re.search(
-                r"[A-Za-z]{2,3}", currency_text
-            ):
+            if re.search(r"\d+", currency_text) or (2 <= len(currency_text) <= 3):
                 match = re.search(r"([A-Za-z]+)", currency_text)
                 if match:
                     return match.group(1)
