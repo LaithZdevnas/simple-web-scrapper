@@ -10,9 +10,7 @@
       "title":       { "css": "div > div > figcaption > a > h3::text" },
       "detail_link": { "css": "div > div > figcaption > a::attr(href)" },
 
-      "next_anchor": { "css": "li[class='next'] a::attr(href)" },
-
-      "first_card_link_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div:nth-of-type(1)"
+      "next_anchor": { "css": "li[class='next'] a::attr(href)" }
     },
 
     "detail": {
@@ -53,9 +51,7 @@
       "title":       { "css": "div > div > figcaption > a > h3::text" },
       "detail_link": { "css": "div > div > figcaption > a::attr(href)" },
 
-      "next_anchor": { "css": "li[class='next'] a::attr(href)" },
-
-      "first_card_link_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div:nth-of-type(1)"
+      "next_anchor": { "css": "li[class='next'] a::attr(href)" }
     },
 
     "detail": {
@@ -98,9 +94,7 @@
       "fields" : {
          "location":     { "css": "div.real-estate-item-desc i.icon-map-marked::text" }
       },
-      "next_anchor": { "css": "li:nth-child(8) a:nth-child(1)::attr(href)" },
-
-      "first_card_link_css": ".real-estate.mt-5.grid-container.row.portfolio div:nth-of-type(1)"
+      "next_anchor": { "css": "li:nth-child(8) a:nth-child(1)::attr(href)" }
     },
 
     "detail": {
@@ -137,9 +131,7 @@
       "title":       { "css": "h2.elementor-heading-title::text" },
       "detail_link": { "css": "a::attr(href)" },
 
-      "next_anchor": { "css": "" },
-
-      "first_card_link_css": ".elementor-loop-container.elementor-grid > div:nth-of-type(1)"
+      "next_anchor": { "css": "" }
     },
 
     "detail": {
@@ -178,9 +170,7 @@
       "title":       { "css": "div > div > div.item-body > h2 > a::text" },
       "detail_link": { "css": "div > div > div.item-body > h2 > a::attr(href)" },
 
-      "next_anchor": { "css": "" },
-
-      "first_card_link_css": "div.listing-tools-wrap ~ div div.item-listing-wrap:nth-of-type(1)"
+      "next_anchor": { "css": "" }
     },
 
     "detail": {
@@ -221,9 +211,7 @@
       "title":       { "xpath": "//div/div[@class='col-md-7']//small[@class='text-black']/text()" },
       "detail_link": { "css": "div.swiper.swiperPropList a::attr(href)" },
 
-      "next_anchor": { "xpath": "//a[@class='page-link' and @rel]/@href" },
-
-      "first_card_link_css": "div[id='listView'] div[class='row g-4']"
+      "next_anchor": { "xpath": "//a[@class='page-link' and @rel]/@href" }
     },
 
     "detail": {
@@ -265,9 +253,7 @@
         "location": { "xpath": "//address/text()" }
       },
 
-      "next_anchor": { "css": "a[aria-label='Next']::attr(href)" },
-
-      "first_card_link_css": "body > main#main-wrap > section > div > div > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(2)"
+      "next_anchor": { "css": "a[aria-label='Next']::attr(href)" }
     },
 
     "detail": {
@@ -307,9 +293,7 @@
                      "currency" :  { "xpath" : "normalize-space(//span[@class='ere-price-display']/text())" }
       },
 
-      "next_anchor": { "xpath": "//a[contains(@class, 'rh_pagination__next')]/@href" },
-
-      "first_card_link_css": "div.rh-ultra-list-box > div:nth-of-type(1)"
+      "next_anchor": { "xpath": "//a[contains(@class, 'rh_pagination__next')]/@href" }
     },
 
     "detail": {
@@ -354,9 +338,7 @@
                      "bathrooms":       { "xpath"   : ".//svg[@id='bath_icon']/ancestor::span[@class='icon']/following-sibling::span[@class='icon-label'][1]/text()" }
       },
 
-      "next_anchor": { "xpath": "//a[contains(@class, 'pagination-next')]/@href" },
-
-      "first_card_link_css": "div.columns.is-multiline > div:nth-of-type(1)"
+      "next_anchor": { "xpath": "//a[contains(@class, 'pagination-next')]/@href" }
     },
 
     "detail": {

@@ -17,7 +17,7 @@ from ..items import BaseScrapperItem
 
 class ConfigurableBaseSpider(scrapy.Spider):
     item_cls = BaseScrapperItem
-    default_wait_time = 30
+    default_wait_time = 15
     pagination_dont_filter = True
 
     def __init__(
@@ -62,8 +62,13 @@ class ConfigurableBaseSpider(scrapy.Spider):
             wait_until=wait_until,
         )
 
-    def parse(self, response: Response, page_num: int = 1):  # type: ignore[override]
-        cards = list(self.get_listing_cards(response))
+    def parse(self, response, page_num: int = 1):
+        driver = response.request.meta["driver"]
+        driver.execute_script("window.scrollBy(0, 1000);")
+
+        sel = Selector(text=driver.page_source)
+
+        cards = list(self.get_listing_cards(sel))  # sel works with your helpers
         self.log_listing_summary(response, len(cards), page_num)
 
         for card in cards:
@@ -71,13 +76,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
             href = self.extract_card_href(card)
             listing_fields = self.extract_card_listing_fields(response, card)
             if href:
-                request = self.build_detail_request(
-                    response, href, title, listing_fields
-                )
-                self.logger.debug("Queueing detail request for %s", request.url)
-                yield request
-            else:
-                self.logger.debug("Skipping card with missing href on %s", response.url)
+                yield self.build_detail_request(response, href, title, listing_fields)
 
         yield from self.handle_pagination(response, page_num)
 
