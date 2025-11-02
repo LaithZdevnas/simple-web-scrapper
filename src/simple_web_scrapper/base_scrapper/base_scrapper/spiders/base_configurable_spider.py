@@ -15,17 +15,9 @@ from ..items import BaseScrapperItem
 
 
 class ConfigurableBaseSpider(scrapy.Spider):
-    """Shared logic for the configurable spiders.
-
-    The subclasses only need to provide a concrete ``item_cls`` and, when
-    necessary, override the hook methods to tweak parsing or pagination
-    behaviour.  The intent is to keep the flow exactly the same while making
-    the logic easier to reason about and trace through logging.
-    """
-
     item_cls = BaseScrapperItem
-    default_wait_time = 10
-    pagination_dont_filter = False
+    default_wait_time = 30
+    pagination_dont_filter = True
 
     def __init__(
         self, site: Optional[str] = None, config: Optional[str] = None, *args, **kwargs
@@ -143,56 +135,12 @@ class ConfigurableBaseSpider(scrapy.Spider):
     def handle_pagination(
         self, response: Response, page_num: int
     ) -> Iterable[SeleniumRequest]:
-        btn_rule = self.listing.get("next_button")
         anc_rule = self.listing.get("next_anchor")
-
-        if btn_rule:
-            has_button = self._get_one(response, btn_rule)
-            if has_button and "css" in btn_rule and btn_rule["css"]:
-                request = self.build_next_button_request(response, page_num, btn_rule)
-                if request:
-                    yield request
-                    return  # Buttons take precedence
-                else:
-                    self.logger.debug("Next button present but no request was built")
 
         if anc_rule:
             request = self.build_next_anchor_request(response, page_num, anc_rule)
             if request:
                 yield request
-
-    def build_next_button_request(
-        self, response: Response, page_num: int, btn_rule: Dict
-    ) -> Optional[SeleniumRequest]:
-        first_card_link_css = self.listing.get("first_card_link_css")
-        button_css = btn_rule.get("css")
-        if not first_card_link_css or not button_css:
-            self.logger.debug("Missing selectors for button pagination")
-            return None
-
-        script = self.get_next_button_script(button_css, first_card_link_css)
-        if not script:
-            self.logger.debug("No pagination script provided")
-            return None
-
-        next_page_num = page_num + 1
-        cb_kwargs = self.get_pagination_cb_kwargs(next_page_num)
-        self.logger.info("Clicking next button to reach page %d", next_page_num)
-
-        request_kwargs: Dict = {
-            "url": response.url,
-            "callback": self.parse,
-            "script": script,
-            "wait_time": self.default_wait_time,
-            "wait_until": EC.presence_of_all_elements_located(
-                (By.CSS_SELECTOR, self.listing["wait_css"])
-            ),
-        }
-        if cb_kwargs:
-            request_kwargs["cb_kwargs"] = cb_kwargs
-        if self.pagination_dont_filter:
-            request_kwargs["dont_filter"] = True
-        return SeleniumRequest(**request_kwargs)
 
     def build_next_anchor_request(
         self, response: Response, page_num: int, anc_rule: Dict
@@ -219,33 +167,6 @@ class ConfigurableBaseSpider(scrapy.Spider):
         if cb_kwargs:
             request_kwargs["cb_kwargs"] = cb_kwargs
         return SeleniumRequest(**request_kwargs)
-
-    def get_next_button_script(self, button_css: str, first_card_link_css: str) -> str:
-        button_css_js = json.dumps(button_css)
-        first_css_js = json.dumps(first_card_link_css)
-        return f"""
-            const firstCardBefore = document.querySelector({first_css_js});
-            const hrefBefore = firstCardBefore ? firstCardBefore.href : null;
-            const button = document.querySelector({button_css_js});
-            if (!button) {{
-                return false;
-            }}
-            button.click();
-            return new Promise((resolve) => {{
-                let attempts = 0;
-                const maxAttempts = 50;
-                const iv = setInterval(() => {{
-                    attempts++;
-                    const firstCardNow = document.querySelector({first_css_js});
-                    const hrefNow = firstCardNow ? firstCardNow.href : null;
-                    if (hrefNow && hrefNow !== hrefBefore) {{
-                        clearInterval(iv); resolve(true);
-                    }} else if (attempts >= maxAttempts) {{
-                        clearInterval(iv); resolve(false);
-                    }}
-                }}, 100);
-            }});
-        """
 
     def get_pagination_cb_kwargs(self, next_page_num: int) -> Optional[Dict]:
         return None
@@ -469,7 +390,10 @@ class ConfigurableBaseSpider(scrapy.Spider):
         if "css" in rule and rule["css"]:
             return root.css(rule["css"])
         if "xpath" in rule and rule["xpath"]:
-            return root.xpath(rule["xpath"])
+            expression = rule["xpath"]
+            if expression.startswith("//") and isinstance(root, Selector):
+                expression = "." + expression
+            return root.xpath(expression)
         return root.css(".__never__")
 
     def _get_one(self, root, rule: Optional[Dict]):
