@@ -1,7 +1,7 @@
 import json
 import re
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional, Set, Union
+from typing import Any, Callable, Dict, Iterable, Optional, Set, Union
 from urllib.parse import urljoin as urljoin_href
 
 import scrapy
@@ -9,6 +9,7 @@ from scrapy.http import Response
 from scrapy.selector import Selector
 from scrapy_selenium import SeleniumRequest
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 
 from ..items import BaseScrapperItem
@@ -52,13 +53,13 @@ class ConfigurableBaseSpider(scrapy.Spider):
     # Core request flow
     # ------------------------------------------------------------------
     def start_requests(self):
-        wait_css = self.listing["wait_css"]
+        wait_until = self._build_wait_condition(self.listing, expect_many=True)
         self.logger.info("Starting crawl at %s", self.start_url)
         yield SeleniumRequest(
             url=self.start_url,
             callback=self.parse,
             wait_time=self.default_wait_time,
-            wait_until=EC.presence_of_all_elements_located((By.CSS_SELECTOR, wait_css)),
+            wait_until=wait_until,
         )
 
     def parse(self, response: Response, page_num: int = 1):  # type: ignore[override]
@@ -116,18 +117,47 @@ class ConfigurableBaseSpider(scrapy.Spider):
         title: str,
         listing_fields: Optional[Dict[str, Any]] = None,
     ) -> SeleniumRequest:
-        wait_css = self.detail["wait_css"]
+        wait_until = self._build_wait_condition(self.detail, expect_many=False)
         request_kwargs: Dict = {
             "url": response.urljoin(href),
             "callback": self.parse_detail,
             "wait_time": self.default_wait_time,
-            "wait_until": EC.presence_of_element_located((By.CSS_SELECTOR, wait_css)),
+            "wait_until": wait_until,
         }
         cb_kwargs: Dict[str, Any] = {"title": title}
         if listing_fields:
             cb_kwargs["listing_fields"] = listing_fields
         request_kwargs["cb_kwargs"] = cb_kwargs
         return SeleniumRequest(**request_kwargs)
+
+    def _build_wait_condition(
+        self, section_cfg: Dict[str, Any], *, expect_many: bool
+    ) -> Callable[[WebDriver], Any]:
+        wait_css = section_cfg["wait_css"]
+        locator = (By.CSS_SELECTOR, wait_css)
+        presence_condition: Callable[[WebDriver], Any]
+        if expect_many:
+            presence_condition = EC.presence_of_all_elements_located(locator)
+        else:
+            presence_condition = EC.presence_of_element_located(locator)
+
+        wait_for_absence = section_cfg.get("wait_for_absence")
+        if not wait_for_absence:
+            return presence_condition
+
+        absence_condition = EC.invisibility_of_element_located(
+            (By.CSS_SELECTOR, wait_for_absence)
+        )
+
+        def _predicate(driver: WebDriver) -> Any:
+            elements = presence_condition(driver)
+            if not elements:
+                return False
+            if not absence_condition(driver):
+                return False
+            return elements
+
+        return _predicate
 
     # ------------------------------------------------------------------
     # Pagination helpers
@@ -156,13 +186,12 @@ class ConfigurableBaseSpider(scrapy.Spider):
             "Navigating to page %d via anchor %s", next_page_num, next_href
         )
 
+        wait_until = self._build_wait_condition(self.listing, expect_many=True)
         request_kwargs: Dict = {
             "url": next_href,
             "callback": self.parse,
             "wait_time": self.default_wait_time,
-            "wait_until": EC.presence_of_all_elements_located(
-                (By.CSS_SELECTOR, self.listing["wait_css"])
-            ),
+            "wait_until": wait_until,
         }
         if cb_kwargs:
             request_kwargs["cb_kwargs"] = cb_kwargs

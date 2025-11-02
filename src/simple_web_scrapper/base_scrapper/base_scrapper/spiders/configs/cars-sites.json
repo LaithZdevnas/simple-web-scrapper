@@ -199,8 +199,9 @@
     "start_url": "https://alqassimgroup.net/cars",
 
     "listing": {
-      "wait_css": "div.row > div.col-12.aos-init.aos-animate",
-      "cards":       { "css": "div.row > div.col-12.aos-init.aos-animate" },
+      "wait_css": "div.row > div.col-12.aos-init",
+      "wait_for_absence": ".MuiCircularProgress-root",
+      "cards":       { "css": "div.row > div.col-12.aos-init" },
 
       "title":       { "css": "h5.product-title a::text" },
       "detail_link": { "css": "h5.product-title a::attr(href)" },
@@ -214,7 +215,7 @@
 
       "next_anchor": { "xpath": "//a[@class='page-link' and @rel]/@href" },
 
-      "first_card_link_css": "div.row > div.col-12.aos-init.aos-animate:nth-of-type(1)"
+        "first_card_link_css": "div.row > div.col-12.aos-init:nth-of-type(1)"
     },
 
     "detail": {
