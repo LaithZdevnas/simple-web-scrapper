@@ -1,50 +1,4 @@
 {
-  "pupiloffate": {
-    "allowed_domains": ["trading.pupiloffate.ae"],
-    "start_url": "https://trading.pupiloffate.ae/search/?car-stock=featured",
-
-    "listing": {
-      "wait_css": "div.vehica-inventory-v1__2-cols > div > div.vehica-inventory-v1__row-grid > div",
-
-      "cards":       { "css": "div.vehica-inventory-v1__2-cols > div > div.vehica-inventory-v1__row-grid > div" },
-      "title":       { "css": "div > div > div > div.vehica-car-row__content > span::text" },
-      "detail_link": { "css": "div > div > a.vehica-car-card-link::attr(href)" },
-
-      "next_button": { "css": "button.vehica-pagination-mobile__arrow.vehica-pagination-mobile__arrow--right:not([disabled]):not(.disabled):not([aria-disabled='true'])" },
-      "next_anchor": { "css": "a.vehica-pagination-mobile__arrow.vehica-pagination-mobile__arrow--right::attr(href)" },
-
-      "first_card_link_css": "a.vehica-car-card-link"
-    },
-
-    "detail": {
-      "wait_css": "body",
-
-      "fields": {
-        "transmission": { "xpath": "//div[@class='vehica-grid__element vehica-grid__element--1of1 vehica-grid__element--tablet-1of2 vehica-grid__element--mobile-1of1']//div[@class='vehica-car-attributes__values vehica-grid__element--1of2'][normalize-space()='Automatic' or normalize-space()='Manual']/text()" },
-        "year":         { "xpath": "//div[contains(@class,'vehica-car-attributes__name') and contains(normalize-space(.),'Year:')]/following-sibling::div[contains(@class,'vehica-car-attributes__values')][1]/text()" },
-        "mileage":      { "xpath": "//div[contains(@class,'vehica-car-attributes__name') and contains(normalize-space(.),'Mileage:')]/following-sibling::div[contains(@class,'vehica-car-attributes__values')][1]/text()" },
-        "brand":        { "xpath": "//div[contains(@class,'vehica-car-attributes__name') and contains(normalize-space(.),'Make:')]/following-sibling::div[contains(@class,'vehica-car-attributes__values')][1]/text()" },
-        "model":        { "xpath": "//div[contains(@class,'vehica-car-attributes__name') and contains(normalize-space(.),'Model:')]/following-sibling::div[contains(@class,'vehica-car-attributes__values')][1]/text()" },
-        "wheel_drive":  { "xpath": "//div[contains(@class,'vehica-car-attributes__name') and contains(normalize-space(.),'Drive Type:')]/following-sibling::div[contains(@class,'vehica-car-attributes__values')][1]/text()" },
-        "condition":    { "xpath": "//div[contains(@class,'vehica-car-attributes__name') and contains(normalize-space(.),'Condition:')]/following-sibling::div[contains(@class,'vehica-car-attributes__values')][1]/text()" },
-
-        "images":       { "xpath": "//div[contains(@class,'vehica-swiper-slide')]//img/@src" },
-
-        "warranty":       { "xpath": "" },
-        "regional_specs": { "xpath": "" },
-        "body_type":      { "xpath": "" },
-        "color":          { "xpath": "" },
-        "location":       { "xpath": "" },
-        "seats":          { "xpath": "" },
-        "accidents":      { "xpath": "" },
-        "vin":            { "xpath": "" },
-        "price": { "css": "div.vehica-car-price:nth-of-type(1)::text" },
-        "currency": { "css": "div.vehica-car-price:nth-of-type(1)::text" },
-        "description":  { "css": "div.vehica-car-description" }
-      },
-      "doors":       { "xpath": "//div[contains(@class,'vehica-car-attributes__name') and contains(normalize-space(.),'Doors:')]/following-sibling::div[contains(@class,'vehica-car-attributes__values')][1]/text()" }
-    }
-  },
   "sanamcars": {
     "allowed_domains": ["sanamcars.com"],
     "start_url": "https://sanamcars.com/inventory/",
@@ -56,7 +10,6 @@
       "title":       { "css": "div > div > div.meta-top >  div.title > a::text" },
       "detail_link": { "css": "div.content > div.meta-top > div.title > a::attr(href)" },
 
-      "next_button": { "css": "div.NONEXIST" },
       "next_anchor": { "xpath": "//a[@class='next page-numbers']/@href" },
 
       "first_card_link_css": ".stm-isotope-sorting.stm-isotope-sorting-main.stm-isotope-sorting-list > div"
@@ -91,6 +44,201 @@
         "vin":            { "xpath": "" }
       },
       "doors":       { "xpath": "" }
+    }
+  },
+  "suncitymotors": {
+    "allowed_domains": ["suncitymotors.net"],
+    "start_url": "https://suncitymotors.net/used-cars-dubai-sun-city-stock/",
+
+    "listing": {
+      "wait_css": "div.inventory-wide-sidebar-left > div > div",
+
+      "cards":       { "css": "div.inventory-wide-sidebar-left > div > div" },
+      "title":       { "css": "div.inv_title > a::text" },
+      "detail_link": { "css": "div.inv_title > a::attr(href)" },
+      "fields" :     {
+                       "price" :          { "css" : "span.price_figure::text" },
+                       "currency" :       { "css" : "span.price_figure::text" },
+                       "warranty" :       { "css" : "li#warranty-id::text" },
+                       "model" :          { "css" : "li#model-id::text" },
+                       "year" :           { "css" : "li#year-id::text" },
+                       "color" :          { "css" : "li#exterior-color-id::text" }
+      },
+
+      "next_anchor": { "xpath": "//a[@class='next page-numbers']/@href" },
+
+      "first_card_link_css": "div.inventory-wide-sidebar-left > div > div:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "body",
+
+      "fields": {
+        "images":       { "css": "div#home-slider-canvas ul.slides li::attr(data-thumb)" },
+
+        "mileage":      { "xpath": "" },
+        "brand":        { "xpath": "" },
+        "description":  {
+                          "css": ""
+        },
+        "transmission": { "xpath": "" },
+        "wheel_drive":  { "xpath": "" },
+        "condition":    { "xpath": "" },
+        "regional_specs": { "xpath": "" },
+        "body_type":      { "xpath": "" },
+        "location":       { "xpath": "" },
+        "seats":          { "xpath": "" },
+        "accidents":      { "xpath": "" },
+        "vin":            { "xpath": "" }
+      },
+      "doors":            { "xpath": "" }
+    }
+  },
+  "theelitecars": {
+    "allowed_domains": ["theelitecars.com"],
+    "start_url": "https://theelitecars.com/current-stock/view_all?",
+
+    "listing": {
+      "wait_css": "div.results-container > div:nth-of-type(1) > div.col-4",
+      "cards":       { "css": "div.results-container > div:nth-of-type(1) > div.col-4" },
+
+      "title":       { "css": "h3 a::text" },
+      "detail_link": { "css": "h3 a::attr(href)" },
+
+      "fields" : {
+                       "year" :           { "xpath" : "//span[strong[normalize-space()='MODEL YEAR']]/following-sibling::span/text()" },
+                       "color" :          { "xpath" : "//span[strong[normalize-space()='EXTERIOR COLOR']]/following-sibling::span/text()" },
+                       "mileage":         { "xpath":  "//span[strong[normalize-space()='MILEAGE(KM)']]/following-sibling::span/text()" },
+                       "condition":       { "xpath":  "//span[strong[normalize-space()='CONDITION']]/following-sibling::span/text()" }
+      },
+
+      "next_anchor": { "xpath": "//a[@class='page-link' and @rel = 'next']/@href" },
+
+      "first_card_link_css": "div.results-container > div:nth-of-type(1) > div.col-4:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "body",
+
+      "fields": {
+        "model" :          { "xpath" : "//span[strong[normalize-space()='MODEL']]/following-sibling::span/text()" },
+        "brand":           { "xpath" :  "//span[strong[normalize-space()='MAKE']]/following-sibling::span/text()" },
+        "warranty" :       { "xpath" : "//span[strong[normalize-space()='WARRANTY']]/following-sibling::span/text()" },
+        "images":          { "css"   : "div.slick-slide div figure img::attr(src)" },
+
+        "price" :          { "css"   : "div.col-5.mb-2 div:nth-of-type(1)::text" },
+        "currency" :       { "css"   : "div.col-5.mb-2 div:nth-of-type(1)::text" },
+
+        "description":  {
+                          "css": ""
+        },
+        "transmission": { "xpath": "" },
+        "wheel_drive":  { "xpath": "" },
+        "regional_specs": { "xpath": "" },
+        "body_type":      { "xpath": "" },
+        "location":       { "xpath": "" },
+        "seats":          { "xpath": "" },
+        "accidents":      { "xpath": "" },
+        "vin":            { "xpath": "" }
+      },
+      "doors":            { "xpath": "//span[strong[normalize-space()='DOOR']]/following-sibling::span/text()" }
+    }
+  },
+  "vipmotors": {
+    "allowed_domains": ["vipmotors.ae"],
+    "start_url": "https://vipmotors.ae/inventory/",
+
+    "listing": {
+      "wait_css": "div#listings-result > div.stm-isotope-sorting-list > div",
+      "cards":       { "css": "div#listings-result > div.stm-isotope-sorting-list > div" },
+
+      "title":       { "css": "div.title.heading-font a::text" },
+      "detail_link": { "css": "div.title.heading-font a::attr(href)" },
+
+      "fields" : {
+                       "price" :          { "css" : "div.normal-price span::text" },
+                       "currency" :       { "css" : "div.normal-price span::text" },
+                       "mileage":         { "css":  "div.mileage div.value::text" },
+                       "year" :           { "css" : "div.ca-year div.value::text" },
+                       "color" :          { "css" : "div.exterior-color div.value::text" },
+                       "brand":           { "xpath" :  "substring-before(normalize-space(//div[contains(@class, 'title') and contains(@class, 'heading-font')]/a/text()), ' ')" }
+      },
+
+      "next_button": { "css": "" },
+      "next_anchor": { "css": "a.next.page-numbers::attr(href)" },
+
+      "first_card_link_css": "div#listings-result > div.stm-isotope-sorting-list > div:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "body",
+
+      "fields": {
+        "regional_specs": { "xpath": "//td[span[normalize-space()='SPECS']]/following-sibling::td/span/text()" },
+        "transmission":   { "xpath": "//td[span[normalize-space()='TRANSMISSION']]/following-sibling::td/span/text()" },
+        "body_type":      { "xpath": "//td[span[normalize-space()='BODY TYPE']]/following-sibling::td/span/text()" },
+        "images":         { "css"   : "div.stm-big-car-gallery a::attr(href)" },
+
+        "model" :          { "xpath" : "" },
+        "warranty" :       { "xpath" : "" },
+        "condition":       { "xpath":  "" },
+        "wheel_drive":    { "xpath": "" },
+        "location":       { "xpath": "" },
+        "seats":          { "xpath": "" },
+        "accidents":      { "xpath": "" },
+        "vin":            { "xpath": "" },
+         "description":     {
+                              "css": ""
+        }
+      },
+      "doors":            { "xpath": "//td[span[normalize-space()='DOORS']]/following-sibling::td/span/text()" }
+    }
+  },
+  "alqassimgroup": {
+    "allowed_domains": ["alqassimgroup.net"],
+    "start_url": "https://alqassimgroup.net/cars",
+
+    "listing": {
+      "wait_css": "div.row > div.col-12.aos-init.aos-animate",
+      "cards":       { "css": "div.row > div.col-12.aos-init.aos-animate" },
+
+      "title":       { "css": "h5.product-title a::text" },
+      "detail_link": { "css": "h5.product-title a::attr(href)" },
+
+      "fields" : {
+                       "year" :           { "xpath" : "//li[contains(@class, 'icon-start')][i[contains(@class, 'fa-calendar-alt')]]/span/text()" },
+                       "mileage":         { "xpath" :  "//li[contains(@class, 'icon-start')][i[contains(@class, 'fa-road')]]/span/text()" },
+                       "price" :          { "css" : "h6.new-price.color-primary::text" },
+                       "currency" :       { "css" : "h6.new-price.color-primary::text" }
+      },
+
+      "next_anchor": { "xpath": "//a[@class='page-link' and @rel]/@href" },
+
+      "first_card_link_css": "div.row > div.col-12.aos-init.aos-animate:nth-of-type(1)"
+    },
+
+    "detail": {
+      "wait_css": "div.product-single-details",
+
+      "fields": {
+        "description":    { "css": "p.MuiTypography-root", "get_all": true },
+        "brand":          { "xpath" :  "//h6[normalize-space()='Brand']/following-sibling::span/text()" },
+        "model" :         { "xpath" : "//h6[normalize-space()='Model']/following-sibling::span/text()" },
+        "transmission":   { "xpath": "//h6[normalize-space()='Transmission Type']/following-sibling::span/text()" },
+        "regional_specs": { "xpath": "//h6[normalize-space()='Regional Specification']/following-sibling::span/text()" },
+        "seats":          { "xpath": "//h6[normalize-space()='Seat Number']/following-sibling::span/text()" },
+        "color" :         { "xpath" : "//h6[normalize-space()='Outside Color']/following-sibling::span/text()" },
+        "warranty" :      { "xpath" : "//h6[normalize-space()='Warranty']/following-sibling::span/text()" },
+        "body_type":      { "css": "span.product-category a::text" },
+        "images":         { "css"   : "div.product-single-gallery figure img::attr(data-src)" },
+
+        "condition":       { "xpath":  "" },
+        "wheel_drive":    { "xpath": "" },
+        "location":       { "xpath": "" },
+        "accidents":      { "xpath": "" },
+        "vin":            { "xpath": "" }
+      },
+      "doors":            { "xpath": "//h6[normalize-space()='Doors Number']/following-sibling::span/text()" }
     }
   }
 }
