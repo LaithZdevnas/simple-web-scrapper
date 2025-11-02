@@ -10,9 +10,7 @@
       "title":       { "css": "div > div > div.meta-top >  div.title > a::text" },
       "detail_link": { "css": "div.content > div.meta-top > div.title > a::attr(href)" },
 
-      "next_anchor": { "xpath": "//a[@class='next page-numbers']/@href" },
-
-      "first_card_link_css": ".stm-isotope-sorting.stm-isotope-sorting-main.stm-isotope-sorting-list > div"
+      "next_anchor": { "xpath": "//a[@class='next page-numbers']/@href" }
     },
 
     "detail": {
@@ -65,9 +63,7 @@
                        "color" :          { "css" : "li#exterior-color-id::text" }
       },
 
-      "next_anchor": { "xpath": "//a[@class='next page-numbers']/@href" },
-
-      "first_card_link_css": "div.inventory-wide-sidebar-left > div > div:nth-of-type(1)"
+      "next_anchor": { "xpath": "//a[@class='next page-numbers']/@href" }
     },
 
     "detail": {
@@ -112,9 +108,7 @@
                        "condition":       { "xpath":  "//span[strong[normalize-space()='CONDITION']]/following-sibling::span/text()" }
       },
 
-      "next_anchor": { "xpath": "//a[@class='page-link' and @rel = 'next']/@href" },
-
-      "first_card_link_css": "div.results-container > div:nth-of-type(1) > div.col-4:nth-of-type(1)"
+      "next_anchor": { "xpath": "//a[@class='page-link' and @rel = 'next']/@href" }
     },
 
     "detail": {
@@ -165,9 +159,7 @@
       },
 
       "next_button": { "css": "" },
-      "next_anchor": { "css": "a.next.page-numbers::attr(href)" },
-
-      "first_card_link_css": "div#listings-result > div.stm-isotope-sorting-list > div:nth-of-type(1)"
+      "next_anchor": { "css": "a.next.page-numbers::attr(href)" }
     },
 
     "detail": {
@@ -199,8 +191,8 @@
     "start_url": "https://alqassimgroup.net/cars",
 
     "listing": {
-      "wait_css": "div.row > div.col-12.aos-init.aos-animate",
-      "cards":       { "css": "div.row > div.col-12.aos-init.aos-animate" },
+      "wait_css": "div.row > div.col-12.aos-init",
+      "cards":       { "css": "div.row > div.col-12.aos-init" },
 
       "title":       { "css": "h5.product-title a::text" },
       "detail_link": { "css": "h5.product-title a::attr(href)" },
@@ -212,13 +204,13 @@
                        "currency" :       { "css" : "h6.new-price.color-primary::text" }
       },
 
-      "next_anchor": { "xpath": "//a[@class='page-link' and @rel]/@href" },
+      "next_anchor": { "xpath": "//a[@class='page-link' and @rel='next']/@href" },
 
-      "first_card_link_css": "div.row > div.col-12.aos-init.aos-animate:nth-of-type(1)"
+      "first_card_link_css": "div.row > div.col-12.aos-init:nth-of-type(1)"
     },
 
     "detail": {
-      "wait_css": "div.product-single-details",
+      "wait_css": "body",
 
       "fields": {
         "description":    { "css": "p.MuiTypography-root", "get_all": true },
@@ -239,6 +231,51 @@
         "vin":            { "xpath": "" }
       },
       "doors":            { "xpath": "//h6[normalize-space()='Doors Number']/following-sibling::span/text()" }
+    }
+  },
+  "parklanemotorcars": {
+    "allowed_domains": ["parklanemotorcars.com"],
+    "start_url": "https://parklanemotorcars.com/list-vehicle",
+
+    "listing": {
+      "wait_css": "body",
+      "cards":       { "css": "div.row.filterItems div.vehicle-card" },
+
+      "title":       { "css": "div.vehicle-subtitle::text" },
+      "detail_link": { "css": "div.vehicle-info a.box-style::attr(href)" },
+
+      "fields" : {
+                       "brand":           { "css" :  "div.vehicle-title::text" }
+      },
+
+      "next_anchor": { "xpath": "//a[@class='page-link' and @rel='next']/@href" }
+    },
+
+    "detail": {
+      "wait_css": "body",
+
+      "fields": {
+        "transmission":    { "xpath": "//div[normalize-space()='TRANSMISSION']/following-sibling::div/text()" },
+        "year" :           { "xpath" : "//div[normalize-space()='YEAR']/following-sibling::div/text()" },
+        "mileage":         { "xpath" :  "//div[normalize-space()='MILEAGE']/following-sibling::div/text()" },
+        "color" :          { "xpath" : "//div[normalize-space()='COLOUR']/following-sibling::div/text()" },
+        "location":        { "xpath" : "//div[normalize-space()='CITY']/following-sibling::div/text()" },
+        "regional_specs":  { "xpath" : "//div[normalize-space()='SPECIFICATION']/following-sibling::div/text()" },
+        "price" :          { "css" : "h3.text-center.car_price::text" },
+        "currency" :       { "css" : "h3.text-center.car_price::text" },
+        "description":     { "css":    "span.truncated-content::text"},
+        "images":          { "css"   : "ul#image-carousel-list li img::attr(src)" },
+
+        "model" :          { "xpath" : "" },
+        "seats":           { "xpath": "" },
+        "warranty" :       { "xpath" : "" },
+        "body_type":       { "css": "" },
+        "condition":       { "xpath":  "" },
+        "wheel_drive":    { "xpath": "" },
+        "accidents":      { "xpath": "" },
+        "vin":            { "xpath": "" }
+      },
+      "doors":            { "xpath": "" }
     }
   }
 }
