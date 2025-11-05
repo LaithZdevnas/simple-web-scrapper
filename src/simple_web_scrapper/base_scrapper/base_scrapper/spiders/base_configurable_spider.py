@@ -185,9 +185,10 @@ class ConfigurableBaseSpider(scrapy.Spider):
             "Navigating to page %d via anchor %s", next_page_num, next_href
         )
 
+        full_url = response.urljoin(next_href)  # handles absolute and relatives URLs
         wait_until = self._build_wait_condition(self.listing, expect_many=True)
         request_kwargs: Dict = {
-            "url": next_href,
+            "url": full_url,
             "callback": self.parse,
             "wait_time": self.default_wait_time,
             "wait_until": wait_until,
@@ -528,7 +529,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
             url = raw.strip()
             if not url:
                 continue
-            if re.match(r"^data:image/[^;]+;base64,", url or ""):
+            if url.startswith("data:image/"):
                 continue
             images.append(join_url(url))
         return images
