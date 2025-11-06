@@ -1,89 +1,165 @@
 {
   "engelvoelkers": {
-    "allowed_domains": ["engelvoelkers.com"],
-    "start_url": "https://www.engelvoelkers.com/ae/en/properties/res/sale/real-estate",
-
+    "allowed_domains": [
+      "engelvoelkers.com"
+    ],
+    "start_urls": [
+      "https://www.engelvoelkers.com/ae/en/properties/res/sale/real-estate"
+    ],
     "listing": {
       "wait_css": "body > div:nth-child(4) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)",
-
-      "cards":       { "xpath": "//body/div[@id='__next']/div/div/div/div/div[@data-testid='search-components_results-list']/div/div[2]/div[1]/article" },
-      "title":       { "css": "div:nth-of-type(2) > h2::text" },
-      "detail_link": { "css": "div:nth-of-type(2) > div:nth-of-type(2) > a::attr(href)" },
-
-      "next_button": { "css": "li:nth-child(8) button:nth-child(1):not([disabled])" },
-      "next_anchor": { "css": "" },
-
+      "cards": {
+        "xpath": "//body/div[@id='__next']/div/div/div/div/div[@data-testid='search-components_results-list']/div/div[2]/div[1]/article"
+      },
+      "title": {
+        "css": "div:nth-of-type(2) > h2::text"
+      },
+      "detail_link": {
+        "css": "div:nth-of-type(2) > div:nth-of-type(2) > a::attr(href)"
+      },
+      "next_button": {
+        "css": "li:nth-child(8) button:nth-child(1):not([disabled])"
+      },
+      "next_anchor": {
+        "css": ""
+      },
       "first_card_link_css": "body > div:nth-child(4) > div:nth-child(3) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1)"
     },
-
     "detail": {
       "wait_css": "div[data-testid='expose-property-description-text'] div",
-
       "fields": {
-        "price":        { "css": "span[data-testid='expose-price-value']::text" },
-        "currency":     { "css": "span[data-testid='expose-price-value']::text" },
-        "description":  { "css": "div[data-testid='expose-property-description-text'] div::text" },
-        "property_type":{ "css": "body div[id='__next'] section section ul:nth-child(1) li:nth-child(1) p:nth-child(2)::text" },
-        "bedrooms":     { "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bedrooms')]/text()" },
-        "bathrooms":    { "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bathrooms')]/text()" },
-        "city":         { "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[2]/button/text()" },
-        "location":     { "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[3]/button/text()" },
-        "images":       { "xpath": "//*[@id=\"__next\"]/div/div[5]/div[1]/button/img/@src" },
-        "rent_or_buy":  { "default_value": "Buy" },
-
-
-        "size":         { "xpath": "" },
-        "amenities":    { "xpath": "" },
-        "sub_location": { "xpath": "" },
-        "coordinates":  { "css":   "" },
-        "slug":         { "xpath": "" },
-        "is_poa":       { "xpath": "" },
-        "year":         { "xpath": "" }
+        "price": {
+          "css": "span[data-testid='expose-price-value']::text"
+        },
+        "currency": {
+          "css": "span[data-testid='expose-price-value']::text"
+        },
+        "description": {
+          "css": "div[data-testid='expose-property-description-text'] div::text"
+        },
+        "property_type": {
+          "css": "body div[id='__next'] section section ul:nth-child(1) li:nth-child(1) p:nth-child(2)::text"
+        },
+        "bedrooms": {
+          "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bedrooms')]/text()"
+        },
+        "bathrooms": {
+          "xpath": "//ul[@data-testid='expose-key-info']//li[contains(normalize-space(.), 'Bathrooms')]/text()"
+        },
+        "city": {
+          "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[2]/button/text()"
+        },
+        "location": {
+          "xpath": "//*[@id=\"__next\"]/div/main/div/div[1]/nav/ol/li[3]/button/text()"
+        },
+        "images": {
+          "xpath": "//*[@id=\"__next\"]/div/div[5]/div[1]/button/img/@src"
+        },
+        "rent_or_buy": {
+          "default_value": "Buy"
+        },
+        "size": {
+          "xpath": ""
+        },
+        "amenities": {
+          "xpath": ""
+        },
+        "sub_location": {
+          "xpath": ""
+        },
+        "coordinates": {
+          "css": ""
+        },
+        "slug": {
+          "xpath": ""
+        },
+        "is_poa": {
+          "xpath": ""
+        },
+        "year": {
+          "xpath": ""
+        }
       }
     }
   },
   "sevencentury": {
-    "allowed_domains": ["sevencentury.com"],
-    "start_url": "https://www.sevencentury.com/property-for-sale-dubai",
-
+    "allowed_domains": [
+      "sevencentury.com"
+    ],
+    "start_urls": [
+      "https://www.sevencentury.com/property-for-sale-dubai"
+    ],
     "listing": {
       "wait_css": "body",
-
-      "cards":       { "xpath": "//body//main//section[2]/a" },
-      "title":       { "xpath": "//h6/text()" },
-      "detail_link": { "xpath": "//@href" },
-
-      "fields" : {
-                     "location" :       { "xpath" : "//div/div[2]/p/text()" },
-                     "price" :          { "xpath" : "//div/div[2]//h5/text()" },
-                     "currency" :       { "xpath" : "//div/div[2]//h5/text()" },
-                     "size" :           { "xpath" : "//div/div[2]/div[@class='flex gap-3 items-center justify-between flex-wrap']/span[1]/text()" },
-                     "bedrooms":        { "xpath"   : "//div/div[2]/div[@class='flex gap-3 items-center justify-between flex-wrap']/span[2]/text()" },
-                     "bathrooms":       { "xpath"   : "//div/div[2]/div[@class='flex gap-3 items-center justify-between flex-wrap']/span[3]/text()" }
+      "cards": {
+        "xpath": "//body//main//section[2]/a"
       },
-
-      "next_button":       { "css": "div.flex.gap-x-1\\.5.items-center.justify-center.mb-12.z-10.relative > button:last-of-type",
-                             "page_xpath" :  "//div[contains(@class, 'flex') and contains(@class, 'gap-x-1.5') and contains(@class, 'items-center') and contains(@class, 'justify-center') and contains(@class, 'mb-12') and contains(@class, 'z-10') and contains(@class, 'relative')]/button[last()]"
+      "title": {
+        "xpath": "//h6/text()"
       },
-      "next_anchor":       { "xpath": "" },
-
+      "detail_link": {
+        "xpath": "//@href"
+      },
+      "fields": {
+        "location": {
+          "xpath": "//div/div[2]/p/text()"
+        },
+        "price": {
+          "xpath": "//div/div[2]//h5/text()"
+        },
+        "currency": {
+          "xpath": "//div/div[2]//h5/text()"
+        },
+        "size": {
+          "xpath": "//div/div[2]/div[@class='flex gap-3 items-center justify-between flex-wrap']/span[1]/text()"
+        },
+        "bedrooms": {
+          "xpath": "//div/div[2]/div[@class='flex gap-3 items-center justify-between flex-wrap']/span[2]/text()"
+        },
+        "bathrooms": {
+          "xpath": "//div/div[2]/div[@class='flex gap-3 items-center justify-between flex-wrap']/span[3]/text()"
+        }
+      },
+      "next_button": {
+        "css": "div.flex.gap-x-1\\.5.items-center.justify-center.mb-12.z-10.relative > button:last-of-type",
+        "page_xpath": "//div[contains(@class, 'flex') and contains(@class, 'gap-x-1.5') and contains(@class, 'items-center') and contains(@class, 'justify-center') and contains(@class, 'mb-12') and contains(@class, 'z-10') and contains(@class, 'relative')]/button[last()]"
+      },
+      "next_anchor": {
+        "xpath": ""
+      },
       "first_card_link_css": "body main section:nth-of-type(2) > a:nth-of-type(1)"
     },
-
     "detail": {
       "wait_css": "body",
-
       "fields": {
-        "description":     { "xpath": "//body/main/main/section/div[4]/div[1]/div[2]/div[1]/div/p", "get_all" : true },
-        "images":          { "css": "body main div div div:nth-child(1) div:nth-child(1) div:nth-child(1) div div div img::attr(src)" },
-        "property_type" :  { "default_value" : "Property" },
-        "rent_or_buy":     { "default_value": "Buy" },
-
-        "amenities":       { "xpath": "" },
-        "year":            { "xpath": "" },
-        "coordinates":     { "css":   "" },
-        "slug":            { "xpath": "" },
-        "is_poa":          { "xpath": "" }
+        "description": {
+          "xpath": "//body/main/main/section/div[4]/div[1]/div[2]/div[1]/div/p",
+          "get_all": true
+        },
+        "images": {
+          "css": "body main div div div:nth-child(1) div:nth-child(1) div:nth-child(1) div div div img::attr(src)"
+        },
+        "property_type": {
+          "default_value": "Property"
+        },
+        "rent_or_buy": {
+          "default_value": "Buy"
+        },
+        "amenities": {
+          "xpath": ""
+        },
+        "year": {
+          "xpath": ""
+        },
+        "coordinates": {
+          "css": ""
+        },
+        "slug": {
+          "xpath": ""
+        },
+        "is_poa": {
+          "xpath": ""
+        }
       }
     }
   }

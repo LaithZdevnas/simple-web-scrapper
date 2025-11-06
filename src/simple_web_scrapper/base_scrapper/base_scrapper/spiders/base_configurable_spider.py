@@ -44,7 +44,8 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
         # Everything comes from JSON
         self.allowed_domains = self.cfg["allowed_domains"]
-        self.start_url = self.cfg["start_url"]
+        self.start_urls = self._resolve_start_urls()
+        self.start_url = self.start_urls[0]
         self.listing = self.cfg["listing"]
         self.detail = self.cfg["detail"]
         self.utilities = FieldUtilities()
@@ -54,13 +55,14 @@ class ConfigurableBaseSpider(scrapy.Spider):
     # ------------------------------------------------------------------
     def start_requests(self):
         wait_until = self._build_wait_condition(self.listing, expect_many=True)
-        self.logger.info("Starting crawl at %s", self.start_url)
-        yield SeleniumRequest(
-            url=self.start_url,
-            callback=self.parse,
-            wait_time=self.default_wait_time,
-            wait_until=wait_until,
-        )
+        for start_url in self.start_urls:
+            self.logger.info("Starting crawl at %s", start_url)
+            yield SeleniumRequest(
+                url=start_url,
+                callback=self.parse,
+                wait_time=self.default_wait_time,
+                wait_until=wait_until,
+            )
 
     def parse(self, response, page_num: int = 1):
         driver = response.request.meta["driver"]
@@ -129,6 +131,23 @@ class ConfigurableBaseSpider(scrapy.Spider):
             cb_kwargs["listing_fields"] = listing_fields
         request_kwargs["cb_kwargs"] = cb_kwargs
         return SeleniumRequest(**request_kwargs)
+
+    def _resolve_start_urls(self):
+        start_urls = self.cfg.get("start_urls")
+        if start_urls:
+            if isinstance(start_urls, str):
+                return [start_urls]
+            if isinstance(start_urls, list) and all(isinstance(url, str) for url in start_urls):
+                return start_urls
+            raise ValueError("'start_urls' must be a string or list of strings")
+
+        legacy_start_url = self.cfg.get("start_url")
+        if isinstance(legacy_start_url, str):
+            return [legacy_start_url]
+
+        raise ValueError(
+            "Config must define 'start_urls' as a string or list of strings."
+        )
 
     def _build_wait_condition(
         self, section_cfg: Dict[str, Any], *, expect_many: bool

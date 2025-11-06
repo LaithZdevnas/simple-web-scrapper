@@ -3,7 +3,9 @@
     "allowed_domains": [
       "morgansrealty.com"
     ],
-    "start_url": "https://www.morgansrealty.com/properties-for-sales",
+    "start_urls": [
+      "https://www.morgansrealty.com/properties-for-sales"
+    ],
     "listing": {
       "wait_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div",
       "cards": {
@@ -136,7 +138,9 @@
     "allowed_domains": [
       "morgansrealty.com"
     ],
-    "start_url": "https://www.morgansrealty.com/search?prop_for=rent",
+    "start_urls": [
+      "https://www.morgansrealty.com/search?prop_for=rent"
+    ],
     "listing": {
       "wait_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div",
       "cards": {
@@ -269,7 +273,9 @@
     "allowed_domains": [
       "skyviewdubai.com"
     ],
-    "start_url": "https://skyviewdubai.com/properties/buy-properties-in-dubai-uae",
+    "start_urls": [
+      "https://skyviewdubai.com/properties/buy-properties-in-dubai-uae"
+    ],
     "listing": {
       "wait_css": ".real-estate.mt-5.grid-container.row.portfolio",
       "cards": {
@@ -403,7 +409,9 @@
     "allowed_domains": [
       "kayeandco.ae"
     ],
-    "start_url": "https://kayeandco.ae/buy/",
+    "start_urls": [
+      "https://kayeandco.ae/buy/"
+    ],
     "listing": {
       "wait_css": ".elementor-loop-container.elementor-grid > div",
       "cards": {
@@ -536,7 +544,9 @@
     "allowed_domains": [
       "dubaifirsthome.com"
     ],
-    "start_url": "https://dubaifirsthome.com/status/sale/",
+    "start_urls": [
+      "https://dubaifirsthome.com/status/sale/"
+    ],
     "listing": {
       "wait_css": "div.listing-tools-wrap ~ div div.item-listing-wrap",
       "cards": {
@@ -670,7 +680,9 @@
     "allowed_domains": [
       "uniqueproperties.ae"
     ],
-    "start_url": "https://uniqueproperties.ae/en/properties",
+    "start_urls": [
+      "https://uniqueproperties.ae/en/properties"
+    ],
     "listing": {
       "wait_css": "div[id='listView'] div[class='row g-4']",
       "cards": {
@@ -804,7 +816,9 @@
     "allowed_domains": [
       "almirath.ae"
     ],
-    "start_url": "https://www.almirath.ae/status/property-for-sales-in-dubai/",
+    "start_urls": [
+      "https://www.almirath.ae/status/property-for-sales-in-dubai/"
+    ],
     "listing": {
       "wait_css": "body > main#main-wrap > section > div > div > div:nth-of-type(1) > div:nth-of-type(2) > div",
       "cards": {
@@ -939,7 +953,9 @@
     "allowed_domains": [
       "sams.ae"
     ],
-    "start_url": "https://sams.ae/property-status/properties-for-sale/",
+    "start_urls": [
+      "https://sams.ae/property-status/properties-for-sale/"
+    ],
     "listing": {
       "wait_css": "div.rh-ultra-list-box > div",
       "cards": {
@@ -1075,7 +1091,9 @@
     "allowed_domains": [
       "ushre.com"
     ],
-    "start_url": "https://ushre.com/properties-for-sale",
+    "start_urls": [
+      "https://ushre.com/properties-for-sale"
+    ],
     "listing": {
       "wait_css": "div.columns.is-multiline > div",
       "cards": {
