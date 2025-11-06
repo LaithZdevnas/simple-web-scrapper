@@ -3,7 +3,9 @@
     "allowed_domains": [
       "sanamcars.com"
     ],
-    "start_url": "https://sanamcars.com/inventory/",
+    "start_urls": [
+      "https://sanamcars.com/inventory/"
+    ],
     "listing": {
       "wait_css": ".stm-isotope-sorting.stm-isotope-sorting-main.stm-isotope-sorting-list > div",
       "cards": {
@@ -157,7 +159,9 @@
     "allowed_domains": [
       "suncitymotors.net"
     ],
-    "start_url": "https://suncitymotors.net/used-cars-dubai-sun-city-stock/",
+    "start_urls": [
+      "https://suncitymotors.net/used-cars-dubai-sun-city-stock/"
+    ],
     "listing": {
       "wait_css": "div.inventory-wide-sidebar-left > div > div",
       "cards": {
@@ -312,7 +316,9 @@
     "allowed_domains": [
       "theelitecars.com"
     ],
-    "start_url": "https://theelitecars.com/current-stock/view_all?",
+    "start_urls": [
+      "https://theelitecars.com/current-stock/view_all?"
+    ],
     "listing": {
       "wait_css": "div.results-container > div:nth-of-type(1) > div.col-4",
       "cards": {
@@ -467,7 +473,9 @@
     "allowed_domains": [
       "vipmotors.ae"
     ],
-    "start_url": "https://vipmotors.ae/inventory/",
+    "start_urls": [
+      "https://vipmotors.ae/inventory/"
+    ],
     "listing": {
       "wait_css": "div#listings-result > div.stm-isotope-sorting-list > div",
       "cards": {
@@ -625,7 +633,9 @@
     "allowed_domains": [
       "alqassimgroup.net"
     ],
-    "start_url": "https://alqassimgroup.net/cars",
+    "start_urls": [
+      "https://alqassimgroup.net/cars"
+    ],
     "listing": {
       "wait_css": "div.row > div.col-12.aos-init",
       "cards": {
@@ -782,7 +792,9 @@
     "allowed_domains": [
       "parklanemotorcars.com"
     ],
-    "start_url": "https://parklanemotorcars.com/list-vehicle",
+    "start_urls": [
+      "https://parklanemotorcars.com/list-vehicle"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -937,7 +949,9 @@
     "allowed_domains": [
       "firstchoicecars.com"
     ],
-    "start_url": "https://www.firstchoicecars.com/buy-used-cars-uae",
+    "start_urls": [
+      "https://www.firstchoicecars.com/buy-used-cars-uae"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -1092,7 +1106,9 @@
     "allowed_domains": [
       "carswitch.com"
     ],
-    "start_url": "https://carswitch.com/uae/used-cars/search",
+    "start_urls": [
+      "https://carswitch.com/uae/used-cars/search"
+    ],
     "listing": {
       "wait_css": "div.car-cards-container div.bg-white.rounded-xl.shadow-sm.overflow-hidden",
       "cards": {
@@ -1247,7 +1263,9 @@
     "allowed_domains": [
       "kavak.com"
     ],
-    "start_url": "https://www.kavak.com/ae/preowned",
+    "start_urls": [
+      "https://www.kavak.com/ae/preowned"
+    ],
     "listing": {
       "wait_css": "div.results_results__container__tcF4_ > div",
       "cards": {
@@ -1401,7 +1419,9 @@
     "allowed_domains": [
       "luxurypulse.com"
     ],
-    "start_url": "https://luxurypulse.com/sales/liste/cars/ae/preowned",
+    "start_urls": [
+      "https://luxurypulse.com/sales/liste/cars/ae/preowned"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -1557,7 +1577,9 @@
     "allowed_domains": [
       "oscarluxury.com"
     ],
-    "start_url": "https://oscarluxury.com/car-inventory/",
+    "start_urls": [
+      "https://oscarluxury.com/car-inventory/"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -1713,7 +1735,9 @@
     "allowed_domains": [
       "nostalgiaclassiccars.ae"
     ],
-    "start_url": "https://nostalgiaclassiccars.ae/en/classic-cars",
+    "start_urls": [
+      "https://nostalgiaclassiccars.ae/en/classic-cars"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -1868,7 +1892,9 @@
     "allowed_domains": [
       "iqautodubai.com"
     ],
-    "start_url": "https://iqautodubai.com/inventory/",
+    "start_urls": [
+      "https://iqautodubai.com/inventory/"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -2024,7 +2050,9 @@
     "allowed_domains": [
       "steerwellauto.com"
     ],
-    "start_url": "https://steerwellauto.com/certified-1/",
+    "start_urls": [
+      "https://steerwellauto.com/certified-1/"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -2180,7 +2208,9 @@
     "allowed_domains": [
       "dresdenmotors.com"
     ],
-    "start_url": "https://dresdenmotors.com/inventory/",
+    "start_urls": [
+      "https://dresdenmotors.com/inventory/"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -2336,7 +2366,9 @@
     "allowed_domains": [
       "greenwaymotors.ae"
     ],
-    "start_url": "https://www.greenwaymotors.ae/stock/",
+    "start_urls": [
+      "https://www.greenwaymotors.ae/stock/"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -2491,7 +2523,9 @@
     "allowed_domains": [
       "tdp.ae"
     ],
-    "start_url": "https://www.tdp.ae/",
+    "start_urls": [
+      "https://www.tdp.ae/"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -2646,7 +2680,9 @@
     "allowed_domains": [
       "cvauto.ae"
     ],
-    "start_url": "https://cvauto.ae/vehicle//",
+    "start_urls": [
+      "https://cvauto.ae/vehicle//"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
@@ -2802,7 +2838,9 @@
     "allowed_domains": [
       "douradocars.com"
     ],
-    "start_url": "https://douradocars.com/stock/",
+    "start_urls": [
+      "https://douradocars.com/stock/"
+    ],
     "listing": {
       "wait_css": "body",
       "cards": {
