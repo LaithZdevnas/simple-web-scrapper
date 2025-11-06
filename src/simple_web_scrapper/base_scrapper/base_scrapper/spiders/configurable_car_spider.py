@@ -24,9 +24,3 @@ class ConfigurableCarSpider(ConfigurableBaseSpider):
         if match:
             item["doors"] = int(match.group(1))
             self.logger.debug("Doors extracted as %s", item["doors"])
-
-    def get_next_button_script(self, button_css: str, first_card_link_css: str) -> str:
-        # Reuse the default behaviour defined in the base class but keep the
-        # method explicit so that it is easy to tweak car-specific pagination
-        # in the future.
-        return super().get_next_button_script(button_css, first_card_link_css)

@@ -1,6 +1,5 @@
-import json
 import re
-from typing import Dict, Optional
+from typing import Dict
 
 from scrapy.http import Response
 from w3lib.html import remove_tags

@@ -2914,13 +2914,13 @@
           ]
         },
         "currency": {
-          "css": "div.car-price span:nth-of-type(1)",
+          "css": "div.car-price span:nth-of-type(1)::text",
           "utilities": [
             "normalize_currency"
           ]
         },
         "price": {
-          "css": "div.car-price span:nth-of-type(2)",
+          "css": "div.car-price span:nth-of-type(2)::text",
           "utilities": [
             "normalize_price"
           ]
@@ -2933,6 +2933,170 @@
         },
         "model": {
           "xpath": "substring-after(//h1/text(), ' ')",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "body_type": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "wheel_drive": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "seats": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "warranty": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "condition": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "location": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "accidents": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "vin": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "doors": {
+        "xpath": ""
+      }
+    }
+  },
+  "saharamotorsuae": {
+    "allowed_domains": [
+      "saharamotorsuae.com"
+    ],
+    "start_urls": [
+      "https://www.saharamotorsuae.com/PREMIUM-CARS",
+      "https://www.saharamotorsuae.com/SUV",
+      "https://www.saharamotorsuae.com/PICKUP",
+      "https://www.saharamotorsuae.com/hybrid-car",
+      "https://www.saharamotorsuae.com/SEDAN-HATCHBACK",
+      "https://www.saharamotorsuae.com/VAN-BUS",
+      "https://www.saharamotorsuae.com/SAHARA-EXCLUSIVE",
+      "https://www.saharamotorsuae.com/WAGON"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+         "css": "div.isotope.column-3 > div"
+      },
+      "title": {
+        "css": "div.car-content a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "div.car-content a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {},
+      "next_anchor": {
+        "xpath": "",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "description": {
+          "css": "section.container-fluid > div.row p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "images": {
+          "css": "div.ui-big-images img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "brand": {
+          "css": "h1::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "mileage": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "transmission": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "color": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "regional_specs": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "currency": {
+          "css": "",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "price": {
+          "css": "",
+          "utilities": [
+            "normalize_price"
+          ]
+        },
+        "model": {
+          "xpath": "",
           "utilities": [
             "clean_value"
           ]

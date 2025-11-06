@@ -4,16 +4,31 @@ from __future__ import annotations
 
 import re
 from collections.abc import Iterable as IterableABC
-from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 from urllib.parse import urljoin as urljoin_href
 
 from scrapy.http import Response
 from w3lib.html import remove_tags
 
+T = TypeVar("T", bound=Union[str, Any])
+
 
 class FieldUtilities:
     """Collection of reusable utilities for field post-processing."""
 
+    # ------------------------------------------------------------------
+    # High-level pipeline handlers
+    # ------------------------------------------------------------------
     def process_detail(
         self,
         value: Any,
@@ -38,6 +53,9 @@ class FieldUtilities:
         pipeline = self.resolve_listing_pipeline(key, rule, position=position)
         return self.apply_pipeline(value, pipeline, context=context)
 
+    # ------------------------------------------------------------------
+    # Pipeline execution
+    # ------------------------------------------------------------------
     def apply_pipeline(
         self,
         value: Any,
@@ -57,7 +75,6 @@ class FieldUtilities:
         context: Optional[Dict[str, Any]] = None,
     ) -> Any:
         """Run the utilities specified by ``utilities`` on ``value`` in order."""
-
         if not utilities:
             return value
 
@@ -149,14 +166,20 @@ class FieldUtilities:
             return cleaned or None
         return value
 
-    def clean_sequence(self, values: Optional[Iterable], **context: Any) -> List:
+    def clean_sequence(
+        self, values: Optional[Iterable[str]], **context: Any
+    ) -> List[str]:
+        """Normalize a single string or iterable of strings into a cleaned list."""
         if not values:
             return []
+
+        # Guarantee a list of strings
         if isinstance(values, str):
-            iterable = [values]
+            iterable: List[str] = [values]
         else:
-            iterable = values
-        cleaned_list = []
+            iterable = list(values)
+
+        cleaned_list: List[str] = []
         for value in iterable:
             cleaned = self.clean_value(value, **context)
             if cleaned is not None:
@@ -179,7 +202,9 @@ class FieldUtilities:
 
         if isinstance(values, str):
             raw_list = [values]
-        elif isinstance(values, IterableABC) and not isinstance(values, (bytes, bytearray)):
+        elif isinstance(values, IterableABC) and not isinstance(
+            values, (bytes, bytearray)
+        ):
             raw_list = list(values)
         else:
             raw_list = [values]
@@ -193,7 +218,7 @@ class FieldUtilities:
             def join_url(url: str) -> str:
                 return urljoin_href(base_url, url)
 
-        images = []
+        images: List[str] = []
         for raw in raw_list:
             if not isinstance(raw, str):
                 continue
@@ -222,11 +247,9 @@ class FieldUtilities:
         if value is None:
             return None
 
-        candidates: Iterable[Any]
-        if isinstance(value, (list, tuple, set)):
-            candidates = value
-        else:
-            candidates = (value,)
+        candidates: Iterable[Any] = (
+            value if isinstance(value, (list, tuple, set)) else (value,)
+        )
 
         for candidate in candidates:
             if candidate is None:
@@ -241,11 +264,9 @@ class FieldUtilities:
         if value is None:
             return None
 
-        candidates: Iterable[Any]
-        if isinstance(value, (list, tuple, set)):
-            candidates = value
-        else:
-            candidates = (value,)
+        candidates: Iterable[Any] = (
+            value if isinstance(value, (list, tuple, set)) else (value,)
+        )
 
         for candidate in candidates:
             if not isinstance(candidate, str):
