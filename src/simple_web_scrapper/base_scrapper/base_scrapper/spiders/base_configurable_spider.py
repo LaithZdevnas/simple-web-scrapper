@@ -8,7 +8,9 @@ from scrapy.selector import Selector
 from scrapy_selenium import SeleniumRequest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from ..items import BaseScrapperItem
 from .field_utilities import FieldUtilities
@@ -66,6 +68,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
     def parse(self, response, page_num: int = 1):
         driver = response.request.meta["driver"]
+        self._ensure_driver_on_response_url(driver, response)
         driver.execute_script("window.scrollBy(0, 1000);")
 
         sel = Selector(text=driver.page_source)
@@ -216,6 +219,38 @@ class ConfigurableBaseSpider(scrapy.Spider):
         if cb_kwargs:
             request_kwargs["cb_kwargs"] = cb_kwargs
         return SeleniumRequest(**request_kwargs)
+
+    def _ensure_driver_on_response_url(self, driver: WebDriver, response: Response) -> None:
+        try:
+            current_url = driver.current_url
+        except Exception:  # pragma: no cover - defensive guard against unexpected driver issues
+            current_url = None
+
+        if self._urls_equivalent(current_url, response.url):
+            return
+
+        wait_until = self._build_wait_condition(self.listing, expect_many=True)
+        log_current = current_url or "<unavailable>"
+        self.logger.debug(
+            "Driver URL %s does not match response %s. Reloading page.",
+            log_current,
+            response.url,
+        )
+
+        driver.get(response.url)
+        try:
+            WebDriverWait(driver, self.default_wait_time).until(wait_until)
+        except TimeoutException:
+            self.logger.warning(
+                "Timed out while waiting for %s to be ready after driver reload.",
+                response.url,
+            )
+
+    @staticmethod
+    def _urls_equivalent(first: Optional[str], second: Optional[str]) -> bool:
+        if not first or not second:
+            return False
+        return first.rstrip("/") == second.rstrip("/")
 
     def get_pagination_cb_kwargs(self, next_page_num: int) -> Optional[Dict]:
         return None
