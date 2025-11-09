@@ -6,9 +6,9 @@ import scrapy
 from scrapy.http import Response
 from scrapy.selector import Selector
 from scrapy_selenium import SeleniumRequest
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
@@ -18,7 +18,7 @@ from .field_utilities import FieldUtilities
 
 class ConfigurableBaseSpider(scrapy.Spider):
     item_cls = BaseScrapperItem
-    default_wait_time = 15
+    default_wait_time = 30
     pagination_dont_filter = True
 
     def __init__(
@@ -104,9 +104,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
     def extract_card_title(self, card) -> str:
         rule = self.listing.get("title")
         value = self._get_one(card, rule)
-        title = (
-            self.utilities.process_listing(value, key="title", rule=rule) or ""
-        )
+        title = self.utilities.process_listing(value, key="title", rule=rule) or ""
         self.logger.debug("Extracted title '%s'", title)
         return title
 
@@ -140,7 +138,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
         if start_urls:
             if isinstance(start_urls, str):
                 return [start_urls]
-            if isinstance(start_urls, list) and all(isinstance(url, str) for url in start_urls):
+            if isinstance(start_urls, list) and all(
+                isinstance(url, str) for url in start_urls
+            ):
                 return start_urls
             raise ValueError("'start_urls' must be a string or list of strings")
 
@@ -220,10 +220,14 @@ class ConfigurableBaseSpider(scrapy.Spider):
             request_kwargs["cb_kwargs"] = cb_kwargs
         return SeleniumRequest(**request_kwargs)
 
-    def _ensure_driver_on_response_url(self, driver: WebDriver, response: Response) -> None:
+    def _ensure_driver_on_response_url(
+        self, driver: WebDriver, response: Response
+    ) -> None:
         try:
             current_url = driver.current_url
-        except Exception:  # pragma: no cover - defensive guard against unexpected driver issues
+        except (
+            Exception
+        ):  # pragma: no cover - defensive guard against unexpected driver issues
             current_url = None
 
         if self._urls_equivalent(current_url, response.url):
