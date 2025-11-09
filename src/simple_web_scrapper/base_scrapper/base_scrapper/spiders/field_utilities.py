@@ -186,6 +186,23 @@ class FieldUtilities:
                 cleaned_list.append(cleaned)
         return cleaned_list
 
+    def property_type_normalizer(self, value: Optional[Any], **_: Any) -> Optional[str]:
+        if not value:
+            return None
+
+        types = {
+            "studio": "Studio",
+            "apartment": "Apartment",
+            "villa": "Villa",
+            "townhouse": "Townhouse",
+        }
+
+        for key, label in types.items():
+            if key in value.lower():
+                return label
+
+        return "Other"
+
     # ------------------------------------------------------------------
     # Normalization helpers
     # ------------------------------------------------------------------

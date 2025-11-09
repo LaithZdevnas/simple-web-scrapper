@@ -113,18 +113,6 @@
             "clean_value"
           ]
         },
-        "slug": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "is_poa": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
         "year": {
           "xpath": "",
           "utilities": [
@@ -243,18 +231,6 @@
           ]
         },
         "city": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "slug": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "is_poa": {
           "xpath": "",
           "utilities": [
             "clean_value"
@@ -384,18 +360,6 @@
             "clean_value"
           ]
         },
-        "slug": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "is_poa": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
         "year": {
           "xpath": "",
           "utilities": [
@@ -514,18 +478,6 @@
           ]
         },
         "city": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "slug": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "is_poa": {
           "xpath": "",
           "utilities": [
             "clean_value"
@@ -655,18 +607,6 @@
             "clean_value"
           ]
         },
-        "slug": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "is_poa": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
         "year": {
           "xpath": "",
           "utilities": [
@@ -787,18 +727,6 @@
         },
         "coordinates": {
           "css": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "slug": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "is_poa": {
-          "xpath": "",
           "utilities": [
             "clean_value"
           ]
@@ -924,18 +852,6 @@
         },
         "coordinates": {
           "css": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "slug": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "is_poa": {
-          "xpath": "",
           "utilities": [
             "clean_value"
           ]
@@ -1071,18 +987,6 @@
           "utilities": [
             "clean_value"
           ]
-        },
-        "slug": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
-        },
-        "is_poa": {
-          "xpath": "",
-          "utilities": [
-            "clean_value"
-          ]
         }
       }
     }
@@ -1203,15 +1107,373 @@
           "utilities": [
             "clean_value"
           ]
+        }
+      }
+    }
+  },
+  "daark": {
+    "allowed_domains": [
+      "daark.ae"
+    ],
+    "start_urls": [
+      "https://daark.ae/properties/"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "css": "div.elementor-widget-container > div.woocommerce.columns-3  > ul li"
+      },
+      "title": {
+        "css": "a.woocommerce-LoopProduct-link h2::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "a.woocommerce-LoopProduct-link::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+      },
+      "next_anchor": {
+        "xpath": "//a[@class='next page-numbers']/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "price": {
+          "xpath": "//p[contains(text(), 'AED')][1]/text()",
+          "utilities": [
+            "normalize_price"
+          ]
         },
-        "slug": {
+        "currency": {
+          "default_value": "AED",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "property_type": {
+          "css": "h1::text",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "location": {
+          "xpath": "//p[contains(normalize-space(), 'Location')][1]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "description": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "images": {
+          "xpath": "",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bedrooms": {
           "xpath": "",
           "utilities": [
             "clean_value"
           ]
         },
-        "is_poa": {
+        "bathrooms": {
           "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "xpath": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "size": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "metropolitanbuy": {
+    "allowed_domains": [
+      "metropolitan.realestate"
+    ],
+    "start_urls": [
+      "https://metropolitan.realestate/buy/"
+    ],
+    "listing": {
+      "wait_css": "div.property__listing-page > div",
+      "cards": {
+        "css": "div.property__listing-page > div"
+      },
+      "title": {
+        "css": "h3.property__title::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "a.listing-title-link::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "price": {
+          "css": "span.price-value::text",
+          "utilities": [
+            "normalize_price"
+          ]
+        },
+        "currency": {
+          "css": "span.price-currency::text",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "property_type": {
+          "css": "a.property__sticker.type::text",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "bedrooms": {
+          "css": "div.property__icon.property__icon_beds > div.property__icon-value > span::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bathrooms": {
+          "css": "div.property__icon.property__icon_baths > div.property__icon-value > span::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "size": {
+          "css": "div.property__icon.property__icon_area > div.property__icon-value > span::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "location": {
+          "css": "div.property__locate span::text",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "css": "a.next.listing-slot::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "images": {
+          "xpath": "//div[@class='object__gallery-desc']//img[@alt]/@src",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "description": {
+          "css": "div.main-info__writeup > p:nth-child(1)",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "Buy",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "xpath": "div.facilities__lists li",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "binayah": {
+    "allowed_domains": [
+      "binayah.com"
+    ],
+      "https://www.binayah.com/dubai-properties-for-sale/",
+      "https://www.binayah.com/dubai-properties-for-rent/"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "css": "div.listing-view.list-view.card-deck > div"
+      },
+      "title": {
+        "css": "h2 a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "h2 a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "price": {
+          "css": "span.price::text",
+          "utilities": [
+            "normalize_price"
+          ]
+        },
+        "currency": {
+          "css": "span.price::text",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "property_type": {
+          "xpath": "//li[@role]/span/text()",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//span[normalize-space()='Bed:']/following-sibling::span/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//span[normalize-space()='Baths:']/following-sibling::span/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "size": {
+          "xpath": "//span[normalize-space()='Sq.Ft']/preceding-sibling::span[normalize-space()!='null']/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "location": {
+          "css": "address span::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "rent_or_buy": {
+          "css": "a.label-status::text",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "xpath": "//div[@role='navigation']//li[5]//a[1]/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "images": {
+          "css": "div#pills-gallery > img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "description": {
+          "css": "div.description-content > p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "city": {
+          "xpath": "//li[@class='detail-country'][2]/span/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "xpath": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
           "utilities": [
             "clean_value"
           ]

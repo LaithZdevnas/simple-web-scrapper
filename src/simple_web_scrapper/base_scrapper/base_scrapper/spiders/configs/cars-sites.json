@@ -2375,7 +2375,7 @@
         "css": "div.container > div.row  div.col-lg-4.col-md-4"
       },
       "title": {
-        "xpath": "concat(//div[@class='stock__section__title']/h5[1], ' ', //div[@class='stock__model__title']/h6[1])",
+        "xpath": "concat(//div[@class='stock__section__title']/h5[1]/text(), ' ', //div[@class='stock__model__title']/h6[1]/text())",
         "utilities": [
           "clean_value"
         ]
@@ -3152,6 +3152,165 @@
       },
       "doors": {
         "xpath": ""
+      }
+    }
+  },
+  "princesscar": {
+    "allowed_domains": [
+      "princesscar.com"
+    ],
+    "start_urls": [
+      "broken"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+         "css": "div.hideOnSearch > div.result-car"
+      },
+      "title": {
+        "xpath": "concat(//p[@class='vehicle-name']/span/text(), ' ', //p[@class='vehicle-name']/text())",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "div.inventory-right a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "currency": {
+          "css": "p.price-style::text",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "price": {
+          "css": "p.price-style::text",
+          "utilities": [
+            "normalize_price"
+          ]
+        }
+      },
+      "next_anchor": {
+        "xpath": "",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "description": {
+          "css": "ul.overview p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "images": {
+          "css": "div#myCarousel img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "body_type": {
+          "xpath": "//li[p[normalize-space()='Body:']]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "transmission": {
+          "xpath": "//li[p[normalize-space()='Transmission:']]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "color": {
+          "xpath": "//li[p[normalize-space()='Exterior color:']]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "seats": {
+          "xpath": "//li[strong[normalize-space()='Seats:']]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "brand": {
+          "xpath": "//ul[@class='overview']/h1/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "mileage": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "regional_specs": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "model": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "wheel_drive": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "warranty": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "condition": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "location": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "accidents": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "vin": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "doors": {
+        "xpath": "//li[strong[normalize-space()='Doors:']]/text()"
       }
     }
   }
