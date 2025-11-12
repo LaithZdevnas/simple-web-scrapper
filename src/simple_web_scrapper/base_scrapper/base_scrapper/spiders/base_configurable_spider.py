@@ -198,8 +198,10 @@ class ConfigurableBaseSpider(scrapy.Spider):
         self, response: Response, page_num: int, anc_rule: Dict
     ) -> Optional[SeleniumRequest]:
         next_href = self._get_one(response, anc_rule)
-        if not next_href:
-            self.logger.debug("Next anchor not found on %s", response.url)
+        if not next_href or next_href.strip() in ("", "#"):
+            self.logger.debug(
+                "Next anchor not found or invalid (%s) on %s", next_href, response.url
+            )
             return None
 
         next_page_num = page_num + 1
