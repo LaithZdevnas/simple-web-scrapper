@@ -1358,9 +1358,10 @@
     "allowed_domains": [
       "binayah.com"
     ],
-      "https://www.binayah.com/dubai-properties-for-sale/",
-      "https://www.binayah.com/dubai-properties-for-rent/"
-    ],
+    "start_urls": [ "https://www.binayah.com/dubai-properties-for-sale/",
+                    "https://www.binayah.com/dubai-properties-for-rent/"
+    ]
+    ,
     "listing": {
       "wait_css": "body",
       "cards": {
