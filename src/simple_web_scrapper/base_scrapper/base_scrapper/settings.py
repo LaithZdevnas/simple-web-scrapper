@@ -8,12 +8,11 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import logging
+from shutil import which
 
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.remote.remote_connection import LOGGER as SELENIUM_LOGGER
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from shutil import which
 
 BOT_NAME = "base_scrapper"
 
@@ -48,6 +47,34 @@ SELENIUM_LOGGER.setLevel(logging.WARNING)
 DOWNLOADER_MIDDLEWARES = {
     "scrapy_selenium.SeleniumMiddleware": 800
 }
+
+# --- Playwright integration ---
+DOWNLOAD_HANDLERS = {
+    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+}
+
+TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
+
+PLAYWRIGHT_BROWSER_TYPE = "chromium"
+PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 30_000
+PLAYWRIGHT_DEFAULT_NAVIGATION_PAGE_GOTO_OPTIONS = {"wait_until": "networkidle"}
+PLAYWRIGHT_LAUNCH_OPTIONS = {
+    "headless": True,
+    "args": [
+        "--no-sandbox",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--disable-extensions",
+        "--disable-software-rasterizer",
+        "--disable-background-networking",
+        "--no-first-run",
+        "--no-default-browser-check",
+        "--window-size=1920,1080",
+    ],
+}
+PLAYWRIGHT_MAX_CONTEXTS = 2
+PLAYWRIGHT_MAX_PAGES_PER_CONTEXT = 4
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
