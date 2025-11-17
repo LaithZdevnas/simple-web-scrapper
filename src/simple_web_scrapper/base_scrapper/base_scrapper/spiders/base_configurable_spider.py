@@ -67,6 +67,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
             )
 
     def parse(self, response, page_num: int = 1):
+        self.logger.debug("Request class: %s", type(response.request))
         driver = response.request.meta["driver"]
         self._ensure_driver_on_response_url(driver, response)
         driver.execute_script("window.scrollBy(0, 1000);")

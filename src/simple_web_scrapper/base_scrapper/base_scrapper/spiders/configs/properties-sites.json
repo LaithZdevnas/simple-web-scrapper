@@ -500,7 +500,7 @@
       "https://dubaifirsthome.com/status/sale/"
     ],
     "listing": {
-      "wait_css": "div.listing-tools-wrap ~ div div.item-listing-wrap",
+      "wait_css": "body",
       "cards": {
         "css": "div.listing-tools-wrap ~ div div.item-listing-wrap"
       },
@@ -524,7 +524,7 @@
       }
     },
     "detail": {
-      "wait_css": "#main-wrap section div.property-banner-item",
+      "wait_css": "body",
       "fields": {
         "price": {
           "xpath": "//div[@role='main']//span[1]/text()",
@@ -569,7 +569,7 @@
           ]
         },
         "amenities": {
-          "css": "div[id='property-features-wrap'] div div ul[role='list'] li",
+          "css": "div#property-features-wrap > div > div > ul > li",
           "get_all": true,
           "utilities": [
             "clean_sequence"
@@ -641,7 +641,7 @@
         ]
       },
       "next_anchor": {
-        "xpath": "//a[@class='page-link' and @rel]/@href",
+        "xpath": "//a[@class='page-link' and @rel='next']/@href",
         "utilities": [
           "clean_value"
         ]
