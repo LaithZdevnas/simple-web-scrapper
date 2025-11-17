@@ -1,3 +1,4 @@
+
 # Scrapy settings for base_scrapper project
 #
 # For simplicity, this file contains only settings considered important or
@@ -10,6 +11,9 @@ import logging
 
 from selenium.webdriver.remote.remote_connection import LOGGER as SELENIUM_LOGGER
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+from shutil import which
 
 BOT_NAME = "base_scrapper"
 
@@ -18,22 +22,31 @@ NEWSPIDER_MODULE = "base_scrapper.spiders"
 
 # --- Selenium driver config ---
 SELENIUM_DRIVER_NAME = "chrome"
-# If you want webdriver-manager to auto-fetch the binary:
-SELENIUM_DRIVER_EXECUTABLE_PATH = (
-    ChromeDriverManager().install()
-)  # auto-manages chromedriver
-# If you prefer a preinstalled driver in PATH, use: which("chromedriver")
-SELENIUM_DRIVER_ARGUMENTS = ["--headless=new", "--disable-gpu", "--no-sandbox"]
+SELENIUM_DRIVER_EXECUTABLE_PATH = which('chromedriver') or '/usr/local/bin/chromedriver'
+SELENIUM_BROWSER_EXECUTABLE_PATH = "/usr/bin/google-chrome"
+
+SELENIUM_DRIVER_ARGUMENTS = [
+    "--headless=new",
+    "--no-sandbox",
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--disable-software-rasterizer",
+    "--disable-extensions",
+    "--remote-debugging-port=9222",
+    "--window-size=1920,1080",
+    "--disable-background-networking",
+    "--no-first-run",
+    "--no-default-browser-check"
+]
+
+RETRY_ENABLED = True
+RETRY_TIMES = 2  # Retry failed requests twice
 
 SELENIUM_LOGGER.setLevel(logging.WARNING)
 
-# Optional: if you have a non-standard Chrome location:
-SELENIUM_BROWSER_EXECUTABLE_PATH = (
-    r"C:\Program Files\Google\Chrome\Application\chrome.exe"
-)
 
 DOWNLOADER_MIDDLEWARES = {
-    "scrapy_selenium.SeleniumMiddleware": 800,
+    "scrapy_selenium.SeleniumMiddleware": 800
 }
 
 
@@ -44,7 +57,7 @@ DOWNLOADER_MIDDLEWARES = {
 ROBOTSTXT_OBEY = False
 
 # Concurrency and throttling settings
-# CONCURRENT_REQUESTS = 16
+CONCURRENT_REQUESTS = 2
 CONCURRENT_REQUESTS_PER_DOMAIN = 1
 DOWNLOAD_DELAY = 1
 
