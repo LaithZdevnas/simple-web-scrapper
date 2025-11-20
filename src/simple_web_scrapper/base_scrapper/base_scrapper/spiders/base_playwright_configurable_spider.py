@@ -6,7 +6,7 @@ import scrapy
 from scrapy import Request
 from scrapy.http import Response
 from scrapy.selector import Selector
-from scrapy_playwright.page import PageCoroutine
+from scrapy_playwright.page import PageMethod
 
 from ..items import BaseScrapperItem
 from .field_utilities import FieldUtilities
@@ -36,10 +36,8 @@ class PlaywrightConfigurableBaseSpider(scrapy.Spider):
         self.cfg = sites.get(site)
         if not self.cfg:
             raise ValueError(
-                "Site '%s' not found in %s. Available: %s",
-                site,
-                cfg_path,
-                ", ".join(sites.keys()),
+                "Site '%s' not found in %s. Available: %s"
+                % (site, cfg_path, ", ".join(sites.keys()))
             )
 
         self.allowed_domains = self.cfg["allowed_domains"]
@@ -48,6 +46,31 @@ class PlaywrightConfigurableBaseSpider(scrapy.Spider):
         self.listing = self.cfg["listing"]
         self.detail = self.cfg["detail"]
         self.utilities = FieldUtilities()
+
+    def _resolve_start_urls(self):
+        """
+        Keep compatibility with your JSON configs:
+
+        - Prefer `start_urls` (string or list of strings)
+        - Fallback to legacy `start_url`
+        """
+        start_urls = self.cfg.get("start_urls")
+        if start_urls:
+            if isinstance(start_urls, str):
+                return [start_urls]
+            if isinstance(start_urls, list) and all(
+                isinstance(url, str) for url in start_urls
+            ):
+                return start_urls
+            raise ValueError("'start_urls' must be a string or list of strings")
+
+        legacy_start_url = self.cfg.get("start_url")
+        if isinstance(legacy_start_url, str):
+            return [legacy_start_url]
+
+        raise ValueError(
+            "Config must define 'start_urls' as a string or list of strings."
+        )
 
     # ------------------------------------------------------------------
     # Request helpers
@@ -58,8 +81,21 @@ class PlaywrightConfigurableBaseSpider(scrapy.Spider):
             yield Request(
                 url=start_url,
                 callback=self.parse,
+                errback=self.errback_playwright,
                 meta=self._build_playwright_meta(self.listing, expect_many=True),
             )
+            
+    async def errback_playwright(self, failure):
+        """Handle Playwright errors - skip and continue"""
+        from playwright._impl._errors import TimeoutError as PlaywrightTimeoutError
+        
+        request_url = failure.request.url
+        
+        # Log the error
+        self.logger.error(f"Request failed for {request_url}: {failure.value}")
+        
+        # Don't retry - just skip
+        return None
 
     async def parse(self, response: Response, page_num: int = 1):
         html = await self._get_rendered_html(response, scroll=True)
@@ -114,6 +150,7 @@ class PlaywrightConfigurableBaseSpider(scrapy.Spider):
         request_kwargs: Dict[str, Any] = {
             "url": response.urljoin(href),
             "callback": self.parse_detail,
+            "errback": self.errback_playwright,
             "meta": self._build_playwright_meta(self.detail, expect_many=False),
         }
         cb_kwargs: Dict[str, Any] = {"title": title}
@@ -149,25 +186,6 @@ class PlaywrightConfigurableBaseSpider(scrapy.Spider):
         self.populate_additional_detail(response, item, fields)
 
         yield item
-
-    def _resolve_start_urls(self):
-        start_urls = self.cfg.get("start_urls")
-        if start_urls:
-            if isinstance(start_urls, str):
-                return [start_urls]
-            if isinstance(start_urls, list) and all(
-                isinstance(url, str) for url in start_urls
-            ):
-                return start_urls
-            raise ValueError("'start_urls' must be a string or list of strings")
-
-        legacy_start_url = self.cfg.get("start_url")
-        if isinstance(legacy_start_url, str):
-            return [legacy_start_url]
-
-        raise ValueError(
-            "Config must define 'start_urls' as a string or list of strings."
-        )
 
     # ------------------------------------------------------------------
     # Pagination helpers
@@ -527,9 +545,15 @@ class PlaywrightConfigurableBaseSpider(scrapy.Spider):
     def _build_playwright_meta(
         self, section_cfg: Dict[str, Any], *, expect_many: bool
     ) -> Dict[str, Any]:
+        """
+        Build the meta dict for scrapy-playwright using the *new* API:
+
+        - use PageMethod instead of PageCoroutine
+        - meta key is 'playwright_page_methods'
+        """
         wait_css = section_cfg["wait_css"]
-        coroutines = [
-            PageCoroutine(
+        methods = [
+            PageMethod(
                 "wait_for_selector",
                 wait_css,
                 timeout=self.default_wait_time_ms,
@@ -538,8 +562,8 @@ class PlaywrightConfigurableBaseSpider(scrapy.Spider):
         ]
         wait_for_absence = section_cfg.get("wait_for_absence")
         if wait_for_absence:
-            coroutines.append(
-                PageCoroutine(
+            methods.append(
+                PageMethod(
                     "wait_for_selector",
                     wait_for_absence,
                     timeout=self.default_wait_time_ms,
@@ -550,7 +574,7 @@ class PlaywrightConfigurableBaseSpider(scrapy.Spider):
         return {
             "playwright": True,
             "playwright_include_page": True,
-            "playwright_page_coroutines": coroutines,
+            "playwright_page_methods": methods,
         }
 
     async def _get_rendered_html(

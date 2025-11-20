@@ -45,37 +45,53 @@ SELENIUM_LOGGER.setLevel(logging.WARNING)
 
 
 DOWNLOADER_MIDDLEWARES = {
+    "base_scrapper.middlewares.RandomUserAgentMiddleware": 400,
     "scrapy_selenium.SeleniumMiddleware": 800
 }
 
+USER_AGENTS_POOL = [
+    # Desktop Chrome
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.5 Safari/605.1.15",
+    # Desktop Firefox
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:117.0) Gecko/20100101 Firefox/117.0",
+    # Mobile
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1",
+    "Mozilla/5.0 (Linux; Android 12; SM-G998B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0 Mobile Safari/537.36",
+]
+
+
 # --- Playwright integration ---
-DOWNLOAD_HANDLERS = {
-    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-}
+# DOWNLOAD_HANDLERS = {
+#     "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+#     "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+# }
 
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 
-PLAYWRIGHT_BROWSER_TYPE = "chromium"
-PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 30_000
-PLAYWRIGHT_DEFAULT_NAVIGATION_PAGE_GOTO_OPTIONS = {"wait_until": "networkidle"}
-PLAYWRIGHT_LAUNCH_OPTIONS = {
-    "headless": True,
-    "args": [
-        "--no-sandbox",
-        "--disable-gpu",
-        "--disable-dev-shm-usage",
-        "--disable-extensions",
-        "--disable-software-rasterizer",
-        "--disable-background-networking",
-        "--no-first-run",
-        "--no-default-browser-check",
-        "--window-size=1920,1080",
-    ],
-}
-PLAYWRIGHT_MAX_CONTEXTS = 2
-PLAYWRIGHT_MAX_PAGES_PER_CONTEXT = 4
+# PLAYWRIGHT_BROWSER_TYPE = "chromium"
+# PLAYWRIGHT_DEFAULT_NAVIGATION_PAGE_GOTO_OPTIONS = {"wait_until": "networkidle"}
+# PLAYWRIGHT_LAUNCH_OPTIONS = {
+#     "headless": True,
+#     "args": [
+#         "--no-sandbox",
+#         "--disable-gpu",
+#         "--disable-dev-shm-usage",
+#         "--disable-extensions",
+#         "--disable-software-rasterizer",
+#         "--disable-background-networking",
+#         "--no-first-run",
+#         "--no-default-browser-check",
+#         "--window-size=1920,1080",
+#     ],
+# }
+# PLAYWRIGHT_MAX_CONTEXTS = 2
+# PLAYWRIGHT_MAX_PAGES_PER_CONTEXT = 4
 
+# def should_abort_request(request):
+#     return request.resource_type == "image" or request.url.endswith(".webp")
+
+# PLAYWRIGHT_ABORT_REQUEST = should_abort_request
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 # USER_AGENT = "base_scrapper (+http://www.yourdomain.com)"
@@ -84,9 +100,10 @@ PLAYWRIGHT_MAX_PAGES_PER_CONTEXT = 4
 ROBOTSTXT_OBEY = False
 
 # Concurrency and throttling settings
-CONCURRENT_REQUESTS = 2
-CONCURRENT_REQUESTS_PER_DOMAIN = 1
-DOWNLOAD_DELAY = 1
+# Increase delays to avoid rate limiting
+CONCURRENT_REQUESTS = 16  # Only 1 request at a time
+CONCURRENT_REQUESTS_PER_DOMAIN = 8
+DOWNLOAD_DELAY = 3 # 3 seconds between requests
 
 # Disable cookies (enabled by default)
 # COOKIES_ENABLED = False

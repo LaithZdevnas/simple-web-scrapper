@@ -67,7 +67,6 @@ class ConfigurableBaseSpider(scrapy.Spider):
             )
 
     def parse(self, response, page_num: int = 1):
-        self.logger.debug("Request class: %s", type(response.request))
         driver = response.request.meta["driver"]
         self._ensure_driver_on_response_url(driver, response)
         driver.execute_script("window.scrollBy(0, 1000);")
@@ -305,7 +304,12 @@ class ConfigurableBaseSpider(scrapy.Spider):
                 )
                 continue
 
-            val = self._get_one(response, rule)
+            if rule.get("get_all"):
+                val = self._get_all(response, rule)
+                val = " ".join(val).strip() if val else None
+            else:
+                val = self._get_one(response, rule)
+
             cleaned = self.utilities.process_detail(
                 val, key=key, rule=rule, context={"response": response}
             )
@@ -376,7 +380,12 @@ class ConfigurableBaseSpider(scrapy.Spider):
             )
             return
 
-        price = self._get_one(response, price_rule)
+        if price_rule.get("get_all"):
+         price = self._get_all(response, price_rule)
+         price = " ".join(price).strip() if price else None
+        else:
+         price = self._get_one(response, price_rule)
+
         normalized = self.utilities.process_detail(
             price,
             key="price",

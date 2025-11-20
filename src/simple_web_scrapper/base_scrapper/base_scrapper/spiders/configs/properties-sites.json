@@ -7,7 +7,7 @@
       "https://www.morgansrealty.com/properties-for-sales"
     ],
     "listing": {
-      "wait_css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div",
+      "wait_css": "body",
       "cards": {
         "css": "section[class='space position-relative '] div[class='container']> div.cards-main > div > div"
       },
@@ -569,7 +569,7 @@
           ]
         },
         "amenities": {
-          "css": "div#property-features-wrap > div > div > ul > li",
+          "css": "div[id='property-features-wrap'] div div ul[role='list'] li",
           "get_all": true,
           "utilities": [
             "clean_sequence"
@@ -1465,6 +1465,1677 @@
           "get_all": true,
           "utilities": [
             "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "dynastyrealestate": {
+    "allowed_domains": [
+      "dynastyrealestate.ae"
+    ],
+    "start_urls": [ "https://dynastyrealestate.ae/property-search/"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "css": "div.wpestate_filter_list_properties_wrapper > div.listing_wrapper"
+      },
+      "title": {
+        "css": "div.property-unit-information-wrapper > h4 a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "div.property-unit-information-wrapper > h4 a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "rent_or_buy": {
+          "css": "div.action_tag_wrapper::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "price": {
+          "css": "div.listing_unit_price_wrapper::text",
+          "utilities": [
+            "normalize_price"
+          ]
+        },
+        "currency": {
+          "css": "div.listing_unit_price_wrapper::text",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "property_type": {
+          "css": "div.property_card_categories_wrapper > a:nth-child(1)::text",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//div[@class='property_listing_details']/div[@data-original-title='Bedrooms']/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//div[@class='property_listing_details']/div[@data-original-title='Bathrooms']/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "size": {
+          "xpath": "//div[@class='property_listing_details']/div[@data-original-title='Property Size']/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "xpath": "//a[i[@class='fas fa-angle-right']]/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "location": {
+          "xpath": "//div[contains(@class, 'listing_detail') and strong[normalize-space()='Address:']]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "images": {
+          "css": "div.owl-stage > div.owl-item img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "description": {
+          "css": "div#wpestate_property_description_section p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "xpath": "//div[contains(@class, 'feature_block_others')]/div[contains(@class, 'listing_detail') and not(contains(@class, 'not_present'))]/text()",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "foresthillsdubai": {
+    "allowed_domains": [
+      "foresthillsdubai.com"
+    ],
+    "start_urls": [ "https://foresthillsdubai.com/for-sale"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "css": "div.listing-view > div.item-listing-wrap"
+      },
+      "title": {
+        "css": "h2.item-title > a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "h2.item-title > a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "location": {
+          "css": "address::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "rent_or_buy": {
+          "css": "div.labels-wrap.labels-right > a:nth-child(1)::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "price": {
+          "css": "li.item-price::text",
+          "utilities": [
+            "normalize_price"
+          ]
+        },
+        "currency": {
+          "css": "li.item-price::text",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "property_type": {
+          "css": "li.h-type span::text",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//span[normalize-space()='Bed:']/following-sibling::span/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//span[normalize-space()='Bath:']/following-sibling::span/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "size": {
+          "xpath": "//span[normalize-space()='Sq.Ft']/preceding-sibling::span[1]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "xpath": "//div[contains(@class, 'pagination')]//a[@class='page-link' and @aria-label='Next']/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "images": {
+          "css": "div.property-banner-grid-wrap img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "description": {
+          "css": "div.block-content-wrap p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "city": {
+          "css": "li.detail-city span::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "css": "div.block-content-wrap > ul.list-3-cols.list-unstyled a",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "remdubai": {
+    "allowed_domains": [
+      "remdubai.com"
+    ],
+    "start_urls": [ "https://remdubai.com/ready-properties"
+    ],
+    "listing": {
+      "wait_css": "div.container > div.row > div.col-sm-6.col-lg-4",
+      "cards": {
+        "css": "div.container > div.row > div.col-sm-6.col-lg-4"
+      },
+      "title": {
+        "css": "h6 a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "h6 a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+      },
+      "next_anchor": {
+        "xpath": "",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "location": {
+          "xpath": "//h4[strong]/text()",
+          "get_all": true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "rent_or_buy": {
+          "xpath": "//a[i[contains(@class, 'fa-circle')]]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "price": {
+          "xpath": "//h3[contains(@class,'price')]/text()",
+          "get_all": true,
+          "utilities": [
+            "normalize_price"
+          ]
+        },
+        "currency": {
+          "css": "h3.price.mb-0::text",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//h6[normalize-space()='Bedroom']/following-sibling::p/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//h6[normalize-space()='Bath']/following-sibling::p/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "size": {
+          "xpath": "//h6[normalize-space()='Sqft']/following-sibling::p/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "property_type": {
+          "xpath": "//span[@class='icon flaticon-home-1']/following-sibling::div/p/text()",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "images": {
+          "xpath": "//div[@class='row mb30 mt30 wow fadeInUp']//img/@src",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "description": {
+          "xpath": "//h4[normalize-space()='Property Description']/following-sibling::p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "axcapital": {
+    "allowed_domains": [
+      "axcapital.ae"
+    ],
+    "start_urls": [ "https://www.axcapital.ae/buy/dubai/properties-for-sale"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "css": "section.properties > div"
+      },
+      "title": {
+        "css": "div.relative.flex.w-full > strong::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "div.relative.flex.w-full > a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "property_type": {
+          "css": "div.relative.flex.w-full  span.capitalize:nth-child(1)",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "location": {
+          "css": "div.relative.flex.w-full > p::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bedrooms": {
+          "css": "div.relative.flex.w-full  span.capitalize:nth-child(2)::text",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "css": "li.next > a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "bathrooms": {
+          "css": "div[class='mt-2 flex items-center space-x-9 tablet:mt-0'] strong:nth-child(2) > span::text",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "Buy",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "price": {
+          "xpath": "//body/div[@id='ax']/div/div/div/div/div/main/div/div/strong[1]/text()",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "xpath": "//body/div[@id='ax']/div/div/div/div/div/main/div/div/strong[1]/text()",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "size": {
+          "xpath": "//strong[3]//span[1]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "images": {
+          "xpath": "//body/div[@id='ax']/div/div/div/div/div/main/div[1]//img[@class='object-cover object-right-top']/@src",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "description": {
+          "xpath": "//div[@id='ax']//div//div//div//div//div//main//div/p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "city": {
+          "xpath": "//a[@href='/buy/dubai/properties-for-sale']//span[@dir='ltr']/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "househuntersdubai": {
+    "allowed_domains": [
+      "househuntersdubai.com"
+    ],
+    "start_urls": [ "https://www.househuntersdubai.com/buy"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "css": "div.row.g-3.justify-content-center > div"
+      },
+      "title": {
+        "css": "h2::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "a[href*='/property/']::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+      },
+      "next_anchor": {
+        "xpath": "//a[@class='page-link' and @rel='next']/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "property_type": {
+          "css": "",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "location": {
+          "xpath": "//body/main/section/div/div/div/div/div/div/div/div/h2[1]",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//main//div//div//div//div//div//div//div//div//div//div[1]//p[1]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//main//div//div//div//div//div//div//div//div//div[2]//p[1]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "Buy",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "price": {
+          "css": "body main section div div div div div div div div h3::text",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "css": "body main section div div div div div div div div h3::text",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "size": {
+          "xpath": "//main//div[3]//p[1]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "images": {
+          "css": "div.owl-stage > div.owl-item a > img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "description": {
+          "css": "div.propDesc.text-para::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "coldwellbanker": {
+    "allowed_domains": [
+      "coldwellbanker.ae"
+    ],
+    "start_urls": [ "https://www.coldwellbanker.ae/listings?type=sale"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "xpath": "//div[@class='container']/div[@class='row']/div[@class='col-sm-6 col-lg-4']"
+      },
+      "title": {
+        "xpath": "//div[@class='list-content']/h6/a/text()",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "xpath": "//div[@class='list-content']/h6/a/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "bedrooms": {
+          "xpath": "//span[contains(@class,'flaticon-bed')]/parent::*/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//span[contains(@class,'flaticon-shower')]/parent::*/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "size": {
+          "xpath": "//span[contains(@class,'flaticon-expand')]/parent::*/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "price": {
+          "xpath": "//div[@class='d-flex justify-content-between']/h6[1]/a/text()",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "xpath": "//div[@class='d-flex justify-content-between']/h6[1]/a/text()",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "location": {
+          "css": "p::text",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "xpath": "//li[@class='page-item' and a[span[@class='fas fa-angle-right']]]/a/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "property_type": {
+          "xpath": "//h6[normalize-space()='Type']/following-sibling::p",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "Buy",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "images": {
+          "css": "div.row.mt30.wow.animated img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "description": {
+          "css": "div#truncated-description p::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "empyrean": {
+    "allowed_domains": [
+      "empyrean.ae"
+    ],
+    "start_urls": [ "https://empyrean.ae/for-sale/"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "css": "div#listing_ajax_container > div.listing_wrapper"
+      },
+      "title": {
+        "css": "h4 a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "h4 a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+      },
+      "next_anchor": {
+        "css": "li.roundright a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "price": {
+          "css": "div.price_area::text",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "css": "div.price_area::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//li[contains(normalize-space(), 'Bedrooms')]/text()",
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//li[contains(normalize-space(), 'Bathrooms')]/text()",
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "size": {
+          "xpath": "//li[contains(normalize-space(), 'ft')]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+
+        "location": {
+          "xpath": "//div[@class='listing_detail col-md-4' and strong[normalize-space()='Address:']]/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "description": {
+          "css": "div#wpestate_property_description_section p::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "city": {
+          "xpath": "//div[@class='listing_detail col-md-4' and strong[normalize-space()='Address:']]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "property_type": {
+          "xpath": "//body/div[@id='all_wrapper']/div/div/div/div/ol/li[2]/a[1]/text()",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "Buy",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "images": {
+          "css": "div.owl-stage a::attr(href)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "rhdubai": {
+    "allowed_domains": [
+      "rhdubai.ae"
+    ],
+    "start_urls": [ "https://www.rhdubai.ae/buy"
+    ],
+    "listing": {
+      "wait_css": "div.row.change-margin > div",
+      "cards": {
+        "css": "div.row.change-margin > div"
+      },
+      "title": {
+        "css": "h5.card-title::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "price": {
+          "css": "strong.price-all::text",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "css": "p.price-details::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_currency"
+          ]
+        }
+      },
+      "next_anchor": {
+        "css": "a[rel='next'][aria-disabled='false']::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "div.all-para.fontclassforinternal",
+      "fields": {
+        "size": {
+          "xpath": "//div[p[normalize-space()='Size:']]/following-sibling::div/span/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "description": {
+          "css": "div.all-para.fontclassforinternal::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//div[p[normalize-space()='Bedrooms:']]/following-sibling::div/span/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//div[p[normalize-space()='Bathrooms:']]/following-sibling::div/span/text()",
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "property_type": {
+          "xpath": "//div[p[normalize-space()='Unit:']]/following-sibling::div/span/text()",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "location": {
+          "xpath": "//div[@id='left-main-div']/div/p[1]/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "Buy",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "images": {
+          "css": "",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "dacha": {
+    "allowed_domains": [
+      "dacha.ae"
+    ],
+    "start_urls": [ "https://www.dacha.ae/buy/"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "xpath": "//body/div[@id='___gatsby']/div[@id='gatsby-focus-wrapper']/div/div/div/div[2]/div[1]/div[2]//div[@class='slick-slider slick-initialized']//div[@class='slick-slide slick-active slick-current' or contains(@class, 'slick-slide slick-active') or @class='slick-slide slick-cloned']"
+      },
+      "title": {
+        "css": "p.grid-title a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "p.grid-title a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "price": {
+          "css": "div.price::text",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "css": "div.price::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "size": {
+          "xpath": "//i[@class='icon-space']/../following-sibling::span/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//i[@class='icon-bedroom']/../following-sibling::span/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//i[@class='icon-bath']/../following-sibling::span/text()",
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "location": {
+          "css": "span.location-info::text",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "css": "",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "ul.key-feature-list",
+      "fields": {
+        "amenities": {
+          "css": "ul.key-feature-list li",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "description": {
+          "css": "div.property-description-block p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "property_type": {
+          "css": "h1.property-address.text-xs::text",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "Buy",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "images": {
+          "css": "div.slick-list img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "excelproperties": {
+    "allowed_domains": [
+      "excelproperties.ae"
+    ],
+    "start_urls": [ "https://excelproperties.ae/properties-for-sale-in-dubai"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "xpath": "//div[@class='col-span-12 mt-4 sm:mt-6']//a"
+      },
+      "title": {
+        "css": "p.property-card-text::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "price": {
+          "css": "p.property-card-title::text",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "css": "p.property-card-title::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "size": {
+          "xpath": "//img[@alt='Area Icon']/following-sibling::div/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//img[@alt='Bed Icon']/following-sibling::div/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "",
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "location": {
+          "css": "p.property-card-area-text::text",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "xpath": "//a[contains(@class, 'bg-white') and span[normalize-space()='Next']]/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "article",
+      "fields": {
+        "description": {
+          "css": "article p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "images": {
+          "css": "div#splide01-list picture img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "rent_or_buy": {
+          "xpath": "//li[2]//a[1]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "property_type": {
+          "xpath": "//body//main//section//div//h1/text()",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "property-zone": {
+    "allowed_domains": [
+      "properties.property-zone.ae"
+    ],
+    "start_urls": [ "https://properties.property-zone.ae/buy/"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "xpath": "//div[@class='listing-view grid-view card-deck grid-view-3-cols']/div"
+      },
+      "title": {
+        "css": "h2 a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "h2 a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "price": {
+          "css": "li.item-price::text",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "css": "span.price-prefix::text",
+          "get_all": true,
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "size": {
+          "xpath": "//span[normalize-space()='sqft']/preceding-sibling::span/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "bedrooms": {
+          "xpath": "//span[normalize-space()='Beds:']/following-sibling::span/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//span[normalize-space()='Baths:']/following-sibling::span/text()",
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "location": {
+          "css": "address::text",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "css": "a.page-link[aria-label='Next']::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "description": {
+          "css": "div.description-content p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "images": {
+          "css": "div.container.hidden-on-mobile img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "amenities": {
+          "css": "ul.list-3-cols.list-unstyled > li a",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "rent_or_buy": {
+          "xpath": "//li[@class='breadcrumb-item'][1]/a/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "property_type": {
+          "xpath": "//li[@class='breadcrumb-item'][2]/a/text()",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "edgerealty": {
+    "allowed_domains": [
+      "edgerealty.ae"
+    ],
+    "start_urls": [ "https://www.edgerealty.ae/en/dubai-properties/sale/apartment-for-sale-in-Dubai"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "xpath": "//div[@class='container-fluid containerization']/div[@class='row mb-5']/div[contains(@class,'col-xl-4')]"
+      },
+      "title": {
+        "xpath": "//span[@class='text-whity d-none d-lg-block']/text()",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "div.property-image-div a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+      },
+      "next_anchor": {
+        "xpath": "//a[@class='page-link' and @rel='next']/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "bedrooms": {
+          "xpath": "//body/section[7]/div[1]/div[1]/div[1]/span[1]/ul[1]/li/p/span[contains(normalize-space(), 'Bedrooms')]/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//body/section[7]/div[1]/div[1]/div[1]/span[1]/ul[1]/li/p/span[contains(normalize-space(), 'Bathrooms')]/text()",
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "size": {
+          "xpath": "//body/section[7]/div[1]/div[1]/div[1]/span[1]/ul[1]/li/p/span[contains(normalize-space(), 'Size:')]/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "price": {
+          "xpath": "//div[@class='AED skill']/h2/span/text()",
+          "get_all": true,
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "xpath": "//div[@class='AED skill']/h2/span/text()",
+          "get_all": true,
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "location": {
+          "css": "div.col-md-10.mb-4 p::text",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "description": {
+          "xpath": "//span[@id='about_mobile']/p/span[contains(@class, 'cf1')]",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "images": {
+          "xpath": "//div[@class='container-fluid containerization']/div[@class='row']//img/@src",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "rent_or_buy": {
+          "default_value": "Buy",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "property_type": {
+          "css": "h3::text",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "year": {
+          "xpath": "",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "coordinates": {
+          "css": "",
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      }
+    }
+  },
+  "elite-bricks": {
+    "allowed_domains": [
+      "elite-bricks.com"
+    ],
+    "start_urls": [ "https://elite-bricks.com/search-results/?status%5B%5D=resale&status%5B%5D=sale"
+    ],
+    "listing": {
+      "wait_css": "body",
+      "cards": {
+        "xpath": "//div[@class='listing-view list-view  card-deck']/div"
+      },
+      "title": {
+        "css": "h2.item-title a::text",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "detail_link": {
+        "css": "h2.item-title a::attr(href)",
+        "utilities": [
+          "clean_value"
+        ]
+      },
+      "fields": {
+        "bedrooms": {
+          "xpath": "//span[normalize-space()='Bed:']/following-sibling::span/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "bathrooms": {
+          "xpath": "//span[normalize-space()='Baths:']/following-sibling::span/text()",
+          "utilities": [
+            "clean_value",
+            "absolute_value"
+          ]
+        },
+        "size": {
+          "xpath": "//span[@class='hz-figure area_postfix']/preceding-sibling::span/text()",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "price": {
+          "css": "li.item-price::text",
+          "utilities": ["normalize_price"]
+        },
+        "currency": {
+          "css": "li.item-price::text",
+          "utilities": [
+            "normalize_currency"
+          ]
+        },
+        "location": {
+          "css": "address::text",
+          "get_all" : true,
+          "utilities": [
+            "clean_value"
+          ]
+        }
+      },
+      "next_anchor": {
+        "xpath": "//a[@class='page-link' and @aria-label='Next' and i[@class='houzez-icon icon-arrow-right-1']]/@href",
+        "utilities": [
+          "clean_value"
+        ]
+      }
+    },
+    "detail": {
+      "wait_css": "body",
+      "fields": {
+        "description": {
+          "css": "div.block-content-wrap p",
+          "get_all": true,
+          "utilities": [
+            "normalize_description"
+          ]
+        },
+        "images": {
+          "css": "div.container.hidden-on-mobile img::attr(src)",
+          "utilities": [
+            "clean_sequence",
+            "normalize_images"
+          ]
+        },
+        "amenities": {
+          "css": "",
+          "get_all": true,
+          "utilities": [
+            "clean_sequence"
+          ]
+        },
+        "rent_or_buy": {
+          "xpath": "//body/main[@id='main-wrap']/section/div/div/div/a[1]/text()",
+          "utilities": [
+            "clean_value"
+          ]
+        },
+        "property_type": {
+          "xpath": "//body/main[@id='main-wrap']/section/div/div/div/div/div/div/div[1]/ul[1]/li[1]/strong[1]/text()",
+          "utilities": [
+            "clean_value",
+            "property_type_normalizer"
+          ]
+        },
+        "city": {
+          "default_value": "Dubai",
+          "utilities": [
+            "clean_value"
           ]
         },
         "year": {
