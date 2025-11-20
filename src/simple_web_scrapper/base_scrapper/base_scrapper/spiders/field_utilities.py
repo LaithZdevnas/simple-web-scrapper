@@ -162,22 +162,35 @@ class FieldUtilities:
         if value is None:
             return None
         if isinstance(value, str):
-            cleaned = remove_tags(value).strip()
-            return cleaned or None
+            text = remove_tags(value)
+            text = re.sub(r"\s+", " ", text)
+            text = text.strip()
+            return text or None
         return value
 
-    def clean_sequence(
-        self, values: Optional[Iterable[str]], **context: Any
-    ) -> List[str]:
-        """Normalize a single string or iterable of strings into a cleaned list."""
-        if not values:
+    def clean_sequence(self, values: Optional[Any], **context: Any) -> List[str]:
+        """Normalize ANY input (string, number, iterable) into a cleaned list of strings."""
+
+        if values is None:
             return []
 
-        # Guarantee a list of strings
-        if isinstance(values, str):
-            iterable: List[str] = [values]
-        else:
+        # If it's already a primitive → wrap as list
+        if isinstance(values, (int, float, bool)):
+            iterable = [str(values)]
+
+        # If it's a single string → wrap as list
+        elif isinstance(values, str):
+            iterable = [values]
+
+        # If it's an iterable (list, tuple, set) → convert to list
+        elif isinstance(values, IterableABC) and not isinstance(
+            values, (bytes, bytearray)
+        ):
             iterable = list(values)
+
+        # Anything else → wrap as list (e.g. dict, object)
+        else:
+            iterable = [str(values)]
 
         cleaned_list: List[str] = []
         for value in iterable:
@@ -298,6 +311,28 @@ class FieldUtilities:
             else:
                 return currency_text
         return None
+
+    def absolute_value(self, value: Any, **_: Any) -> Optional[Any]:
+        """Return the absolute numeric value of int/float or numeric strings."""
+        if value is None:
+            return None
+
+        # If it's already a number
+        if isinstance(value, (int, float)):
+            return abs(value)
+
+        # If it's a string that *might* be a number
+        if isinstance(value, str):
+            value = value.strip()
+            # Try to parse as integer
+            if re.fullmatch(r"-?\d+", value):
+                return abs(int(value))
+            # Try to parse as float
+            if re.fullmatch(r"-?\d+(\.\d+)?", value):
+                return abs(float(value))
+
+        # Default: return unchanged
+        return value
 
     # ------------------------------------------------------------------
     # Internal helpers

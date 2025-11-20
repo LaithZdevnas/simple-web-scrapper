@@ -1267,7 +1267,7 @@
       "https://www.kavak.com/ae/preowned"
     ],
     "listing": {
-      "wait_css": "div.results_results__container__tcF4_ > div",
+      "wait_css": "body",
       "cards": {
         "css": "div.results_results__container__tcF4_ > div"
       },
@@ -1285,7 +1285,7 @@
       },
       "fields": {},
       "next_anchor": {
-        "css": "a.results_results__pagination-nav__Qcftr::attr(href)",
+        "xpath": "//a[@class='results_results__pagination-nav__Qcftr' and span[contains(@class,'uki-icon uki-icon__chevron-right')]]/@href",
         "utilities": [
           "clean_value"
         ]
@@ -2243,7 +2243,7 @@
         }
       },
       "next_anchor": {
-        "css": "a.next.page-numbers::attr(@href)",
+        "css": "a.next.page-numbers::attr(href)",
         "utilities": [
           "clean_value"
         ]
