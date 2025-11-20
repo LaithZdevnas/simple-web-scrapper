@@ -6,7 +6,24 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 from scrapy import signals
+import random
+from scrapy.http import Request
+from scrapy.exceptions import NotConfigured
 
+class RandomUserAgentMiddleware:
+
+    def __init__(self, agents):
+        self.agents = agents
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        agents = crawler.settings.get("USER_AGENTS_POOL")
+        if not agents:
+            raise NotConfigured
+        return cls(agents)
+
+    def process_request(self, request: Request, spider):
+        request.headers["User-Agent"] = random.choice(self.agents)
 
 class BaseScrapperSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,

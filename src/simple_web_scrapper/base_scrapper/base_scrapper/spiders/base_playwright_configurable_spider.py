@@ -1,24 +1,22 @@
 import json
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, Optional, Set
+from typing import Any, Dict, Iterable, Optional, Set
 
 import scrapy
+from scrapy import Request
 from scrapy.http import Response
 from scrapy.selector import Selector
-from scrapy_selenium import SeleniumRequest
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+from scrapy_playwright.page import PageMethod
 
 from ..items import BaseScrapperItem
 from .field_utilities import FieldUtilities
 
 
-class ConfigurableBaseSpider(scrapy.Spider):
+class PlaywrightConfigurableBaseSpider(scrapy.Spider):
+    """Configurable spider that relies on Playwright for rendering."""
+
     item_cls = BaseScrapperItem
-    default_wait_time = 30
+    default_wait_time_ms = 30_000
     pagination_dont_filter = True
 
     def __init__(
@@ -38,13 +36,10 @@ class ConfigurableBaseSpider(scrapy.Spider):
         self.cfg = sites.get(site)
         if not self.cfg:
             raise ValueError(
-                "Site '%s' not found in %s. Available: %s",
-                site,
-                cfg_path,
-                ", ".join(sites.keys()),
+                "Site '%s' not found in %s. Available: %s"
+                % (site, cfg_path, ", ".join(sites.keys()))
             )
 
-        # Everything comes from JSON
         self.allowed_domains = self.cfg["allowed_domains"]
         self.start_urls = self._resolve_start_urls()
         self.start_url = self.start_urls[0]
@@ -52,28 +47,62 @@ class ConfigurableBaseSpider(scrapy.Spider):
         self.detail = self.cfg["detail"]
         self.utilities = FieldUtilities()
 
+    def _resolve_start_urls(self):
+        """
+        Keep compatibility with your JSON configs:
+
+        - Prefer `start_urls` (string or list of strings)
+        - Fallback to legacy `start_url`
+        """
+        start_urls = self.cfg.get("start_urls")
+        if start_urls:
+            if isinstance(start_urls, str):
+                return [start_urls]
+            if isinstance(start_urls, list) and all(
+                isinstance(url, str) for url in start_urls
+            ):
+                return start_urls
+            raise ValueError("'start_urls' must be a string or list of strings")
+
+        legacy_start_url = self.cfg.get("start_url")
+        if isinstance(legacy_start_url, str):
+            return [legacy_start_url]
+
+        raise ValueError(
+            "Config must define 'start_urls' as a string or list of strings."
+        )
+
     # ------------------------------------------------------------------
-    # Core request flow
+    # Request helpers
     # ------------------------------------------------------------------
     def start_requests(self):
-        wait_until = self._build_wait_condition(self.listing, expect_many=True)
         for start_url in self.start_urls:
             self.logger.info("Starting crawl at %s", start_url)
-            yield SeleniumRequest(
+            yield Request(
                 url=start_url,
                 callback=self.parse,
-                wait_time=self.default_wait_time,
-                wait_until=wait_until,
+                errback=self.errback_playwright,
+                meta=self._build_playwright_meta(self.listing, expect_many=True),
             )
+            
+    async def errback_playwright(self, failure):
+        """Handle Playwright errors - skip and continue"""
+        from playwright._impl._errors import TimeoutError as PlaywrightTimeoutError
+        
+        request_url = failure.request.url
+        
+        # Log the error
+        self.logger.error(f"Request failed for {request_url}: {failure.value}")
+        
+        # Don't retry - just skip
+        return None
 
-    def parse(self, response, page_num: int = 1):
-        driver = response.request.meta["driver"]
-        self._ensure_driver_on_response_url(driver, response)
-        driver.execute_script("window.scrollBy(0, 1000);")
+    async def parse(self, response: Response, page_num: int = 1):
+        html = await self._get_rendered_html(response, scroll=True)
+        selector = Selector(text=html)
+        response = response.replace(body=html)
 
-        sel = Selector(text=driver.page_source)
-
-        cards = list(self.get_listing_cards(sel))  # sel works with your helpers
+        cards = list(self.get_listing_cards(selector))
         self.log_listing_summary(response, len(cards), page_num)
 
         for card in cards:
@@ -83,11 +112,9 @@ class ConfigurableBaseSpider(scrapy.Spider):
             if href:
                 yield self.build_detail_request(response, href, title, listing_fields)
 
-        yield from self.handle_pagination(response, page_num)
+        for pagination_request in self.handle_pagination(response, page_num):
+            yield pagination_request
 
-    # ------------------------------------------------------------------
-    # Listing helpers
-    # ------------------------------------------------------------------
     def get_listing_cards(self, response: Response) -> Iterable[Selector]:
         cards_selector = self.listing["cards"]
         cards = self._sel_nodes(response, cards_selector)
@@ -119,157 +146,28 @@ class ConfigurableBaseSpider(scrapy.Spider):
         href: str,
         title: str,
         listing_fields: Optional[Dict[str, Any]] = None,
-    ) -> SeleniumRequest:
-        wait_until = self._build_wait_condition(self.detail, expect_many=False)
-        request_kwargs: Dict = {
+    ) -> Request:
+        request_kwargs: Dict[str, Any] = {
             "url": response.urljoin(href),
             "callback": self.parse_detail,
-            "wait_time": self.default_wait_time,
-            "wait_until": wait_until,
+            "errback": self.errback_playwright,
+            "meta": self._build_playwright_meta(self.detail, expect_many=False),
         }
         cb_kwargs: Dict[str, Any] = {"title": title}
         if listing_fields:
             cb_kwargs["listing_fields"] = listing_fields
         request_kwargs["cb_kwargs"] = cb_kwargs
-        return SeleniumRequest(**request_kwargs)
+        return Request(**request_kwargs)
 
-    def _resolve_start_urls(self):
-        start_urls = self.cfg.get("start_urls")
-        if start_urls:
-            if isinstance(start_urls, str):
-                return [start_urls]
-            if isinstance(start_urls, list) and all(
-                isinstance(url, str) for url in start_urls
-            ):
-                return start_urls
-            raise ValueError("'start_urls' must be a string or list of strings")
-
-        legacy_start_url = self.cfg.get("start_url")
-        if isinstance(legacy_start_url, str):
-            return [legacy_start_url]
-
-        raise ValueError(
-            "Config must define 'start_urls' as a string or list of strings."
-        )
-
-    def _build_wait_condition(
-        self, section_cfg: Dict[str, Any], *, expect_many: bool
-    ) -> Callable[[WebDriver], Any]:
-        wait_css = section_cfg["wait_css"]
-        locator = (By.CSS_SELECTOR, wait_css)
-        presence_condition: Callable[[WebDriver], Any]
-        if expect_many:
-            presence_condition = EC.presence_of_all_elements_located(locator)
-        else:
-            presence_condition = EC.presence_of_element_located(locator)
-
-        wait_for_absence = section_cfg.get("wait_for_absence")
-        if not wait_for_absence:
-            return presence_condition
-
-        absence_condition = EC.invisibility_of_element_located(
-            (By.CSS_SELECTOR, wait_for_absence)
-        )
-
-        def _predicate(driver: WebDriver) -> Any:
-            elements = presence_condition(driver)
-            if not elements:
-                return False
-            if not absence_condition(driver):
-                return False
-            return elements
-
-        return _predicate
-
-    # ------------------------------------------------------------------
-    # Pagination helpers
-    # ------------------------------------------------------------------
-    def handle_pagination(
-        self, response: Response, page_num: int
-    ) -> Iterable[SeleniumRequest]:
-        anc_rule = self.listing.get("next_anchor")
-
-        if anc_rule:
-            request = self.build_next_anchor_request(response, page_num, anc_rule)
-            if request:
-                yield request
-
-    def build_next_anchor_request(
-        self, response: Response, page_num: int, anc_rule: Dict
-    ) -> Optional[SeleniumRequest]:
-        next_href = self._get_one(response, anc_rule)
-        if not next_href or next_href.strip() in ("", "#"):
-            self.logger.debug(
-                "Next anchor not found or invalid (%s) on %s", next_href, response.url
-            )
-            return None
-
-        next_page_num = page_num + 1
-        cb_kwargs = self.get_pagination_cb_kwargs(next_page_num)
-        self.logger.info(
-            "Navigating to page %d via anchor %s", next_page_num, next_href
-        )
-
-        full_url = response.urljoin(next_href)  # handles absolute and relatives URLs
-        wait_until = self._build_wait_condition(self.listing, expect_many=True)
-        request_kwargs: Dict = {
-            "url": full_url,
-            "callback": self.parse,
-            "wait_time": self.default_wait_time,
-            "wait_until": wait_until,
-        }
-        if cb_kwargs:
-            request_kwargs["cb_kwargs"] = cb_kwargs
-        return SeleniumRequest(**request_kwargs)
-
-    def _ensure_driver_on_response_url(
-        self, driver: WebDriver, response: Response
-    ) -> None:
-        try:
-            current_url = driver.current_url
-        except (
-            Exception
-        ):  # pragma: no cover - defensive guard against unexpected driver issues
-            current_url = None
-
-        if self._urls_equivalent(current_url, response.url):
-            return
-
-        wait_until = self._build_wait_condition(self.listing, expect_many=True)
-        log_current = current_url or "<unavailable>"
-        self.logger.debug(
-            "Driver URL %s does not match response %s. Reloading page.",
-            log_current,
-            response.url,
-        )
-
-        driver.get(response.url)
-        try:
-            WebDriverWait(driver, self.default_wait_time).until(wait_until)
-        except TimeoutException:
-            self.logger.warning(
-                "Timed out while waiting for %s to be ready after driver reload.",
-                response.url,
-            )
-
-    @staticmethod
-    def _urls_equivalent(first: Optional[str], second: Optional[str]) -> bool:
-        if not first or not second:
-            return False
-        return first.rstrip("/") == second.rstrip("/")
-
-    def get_pagination_cb_kwargs(self, next_page_num: int) -> Optional[Dict]:
-        return None
-
-    # ------------------------------------------------------------------
-    # Detail helpers
-    # ------------------------------------------------------------------
-    def parse_detail(
+    async def parse_detail(
         self,
         response: Response,
         title: str,
         listing_fields: Optional[Dict[str, Any]] = None,
     ):
+        html = await self._get_rendered_html(response)
+        response = response.replace(body=html)
+
         item = self.item_cls()
         item["title"] = title
         item["url"] = response.url
@@ -289,6 +187,50 @@ class ConfigurableBaseSpider(scrapy.Spider):
 
         yield item
 
+    # ------------------------------------------------------------------
+    # Pagination helpers
+    # ------------------------------------------------------------------
+    def handle_pagination(
+        self, response: Response, page_num: int
+    ) -> Iterable[Request]:
+        anc_rule = self.listing.get("next_anchor")
+        if anc_rule:
+            request = self.build_next_anchor_request(response, page_num, anc_rule)
+            if request:
+                yield request
+
+    def build_next_anchor_request(
+        self, response: Response, page_num: int, anc_rule: Dict
+    ) -> Optional[Request]:
+        next_href = self._get_one(response, anc_rule)
+        if not next_href or next_href.strip() in ("", "#"):
+            self.logger.debug(
+                "Next anchor not found or invalid (%s) on %s", next_href, response.url
+            )
+            return None
+
+        next_page_num = page_num + 1
+        cb_kwargs = self.get_pagination_cb_kwargs(next_page_num)
+        self.logger.info(
+            "Navigating to page %d via anchor %s", next_page_num, next_href
+        )
+
+        full_url = response.urljoin(next_href)
+        request_kwargs: Dict[str, Any] = {
+            "url": full_url,
+            "callback": self.parse,
+            "meta": self._build_playwright_meta(self.listing, expect_many=True),
+        }
+        if cb_kwargs:
+            request_kwargs["cb_kwargs"] = cb_kwargs
+        return Request(**request_kwargs)
+
+    def get_pagination_cb_kwargs(self, next_page_num: int) -> Optional[Dict]:
+        return None
+
+    # ------------------------------------------------------------------
+    # Detail helpers
+    # ------------------------------------------------------------------
     def populate_generic_fields(
         self, response: Response, item: scrapy.Item, fields: Dict
     ) -> None:
@@ -304,12 +246,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
                 )
                 continue
 
-            if rule.get("get_all"):
-                val = self._get_all(response, rule)
-                val = " ".join(val).strip() if val else None
-            else:
-                val = self._get_one(response, rule)
-
+            val = self._get_one(response, rule)
             cleaned = self.utilities.process_detail(
                 val, key=key, rule=rule, context={"response": response}
             )
@@ -380,12 +317,7 @@ class ConfigurableBaseSpider(scrapy.Spider):
             )
             return
 
-        if price_rule.get("get_all"):
-         price = self._get_all(response, price_rule)
-         price = " ".join(price).strip() if price else None
-        else:
-         price = self._get_one(response, price_rule)
-
+        price = self._get_one(response, price_rule)
         normalized = self.utilities.process_detail(
             price,
             key="price",
@@ -507,29 +439,6 @@ class ConfigurableBaseSpider(scrapy.Spider):
                     "Listing field %s pre-populated as %s", key, item[key]
                 )
 
-    # ------------------------------------------------------------------
-    # Selector utilities
-    # ------------------------------------------------------------------
-    def _sel_nodes(self, root, rule: Optional[Dict]):
-        if not rule:
-            return root.css(".__never__")
-        if "css" in rule and rule["css"]:
-            return root.css(rule["css"])
-        if "xpath" in rule and rule["xpath"]:
-            expression = rule["xpath"]
-            if expression.startswith("//") and isinstance(root, Selector):
-                expression = "." + expression
-            return root.xpath(expression)
-        return root.css(".__never__")
-
-    def _get_one(self, root, rule: Optional[Dict]):
-        sel = self._sel_nodes(root, rule)
-        return sel.get() or None
-
-    def _get_all(self, root, rule: Optional[Dict]):
-        sel = self._sel_nodes(root, rule)
-        return sel.getall()
-
     def get_reserved_detail_keys(self) -> Set[str]:
         return {"images", "description", "price", "currency"}
 
@@ -609,6 +518,80 @@ class ConfigurableBaseSpider(scrapy.Spider):
             listing_data["_listing_base"] = response.url
 
         return listing_data
+
+    # ------------------------------------------------------------------
+    # Selector utilities
+    # ------------------------------------------------------------------
+    def _sel_nodes(self, root, rule: Optional[Dict]):
+        if not rule:
+            return root.css(".__never__")
+        if "css" in rule and rule["css"]:
+            return root.css(rule["css"])
+        if "xpath" in rule and rule["xpath"]:
+            expression = rule["xpath"]
+            if expression.startswith("//") and isinstance(root, Selector):
+                expression = "." + expression
+            return root.xpath(expression)
+        return root.css(".__never__")
+
+    def _get_one(self, root, rule: Optional[Dict]):
+        sel = self._sel_nodes(root, rule)
+        return sel.get() or None
+
+    def _get_all(self, root, rule: Optional[Dict]):
+        sel = self._sel_nodes(root, rule)
+        return sel.getall()
+
+    def _build_playwright_meta(
+        self, section_cfg: Dict[str, Any], *, expect_many: bool
+    ) -> Dict[str, Any]:
+        """
+        Build the meta dict for scrapy-playwright using the *new* API:
+
+        - use PageMethod instead of PageCoroutine
+        - meta key is 'playwright_page_methods'
+        """
+        wait_css = section_cfg["wait_css"]
+        methods = [
+            PageMethod(
+                "wait_for_selector",
+                wait_css,
+                timeout=self.default_wait_time_ms,
+                state="visible",
+            )
+        ]
+        wait_for_absence = section_cfg.get("wait_for_absence")
+        if wait_for_absence:
+            methods.append(
+                PageMethod(
+                    "wait_for_selector",
+                    wait_for_absence,
+                    timeout=self.default_wait_time_ms,
+                    state="detached",
+                )
+            )
+
+        return {
+            "playwright": True,
+            "playwright_include_page": True,
+            "playwright_page_methods": methods,
+        }
+
+    async def _get_rendered_html(
+        self, response: Response, *, scroll: bool = False
+    ) -> str:
+        page = response.meta.get("playwright_page")
+        if not page:
+            return response.text
+
+        try:
+            if scroll:
+                await page.evaluate("() => window.scrollBy(0, 1000)")
+            html = await page.content()
+        finally:
+            await page.close()
+
+        return html
 
     @staticmethod
     def _resolve_config_path(config: str) -> str:

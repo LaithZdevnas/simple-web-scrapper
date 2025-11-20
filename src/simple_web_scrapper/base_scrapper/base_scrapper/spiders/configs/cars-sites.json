@@ -1285,7 +1285,7 @@
       },
       "fields": {},
       "next_anchor": {
-        "css": "//a[@class='results_results__pagination-nav__Qcftr' and span[contains(@class,'uki-icon uki-icon__chevron-right')]]/@href",
+        "xpath": "//a[@class='results_results__pagination-nav__Qcftr' and span[contains(@class,'uki-icon uki-icon__chevron-right')]]/@href",
         "utilities": [
           "clean_value"
         ]
